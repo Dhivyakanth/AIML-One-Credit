@@ -4,7 +4,7 @@ import { Mail, Phone, MapPin, Download } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden px-6 md:px-16 lg:px-24 pt-24 pb-16">
+    <section id="about" className="relative min-h-screen flex flex-col justify-center overflow-hidden px-6 md:px-16 lg:px-24 pt-24 pb-16">
       {/* Background glow */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -22,19 +22,22 @@ const Hero = () => {
           DHIVYAKANTH
         </span>
         <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          <a href="#about" className="hover:text-primary transition-colors">About</a>
-          <a href="#skills" className="hover:text-primary transition-colors">Skills</a>
-          <a href="#experience" className="hover:text-primary transition-colors">Experience</a>
-          <a href="#projects" className="hover:text-primary transition-colors">Projects</a>
-          <a href="#education" className="hover:text-primary transition-colors">Education</a>
-          <a href="#contact" className="hover:text-primary transition-colors">Contact</a>
+          {["about", "skills", "experience", "projects", "education", "contact"].map((id) => (
+            <button
+              key={id}
+              onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })}
+              className="capitalize hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
+            >
+              {id}
+            </button>
+          ))}
         </div>
-        <a
-          href="#contact"
+        <button
+          onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
           className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
         >
           Hire Me
-        </a>
+        </button>
       </motion.nav>
 
       <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
@@ -53,11 +56,9 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.7 }}
-            className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-primary leading-none"
+            className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-primary leading-none whitespace-nowrap"
           >
-            DHIVYA
-            <br />
-            KANTH P
+            DHIVYAKANTH P
           </motion.h1>
 
           <motion.p
