@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import profileImg from "@/assets/profile.png";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Download } from "lucide-react";
 
 const Hero = () => {
   return (
@@ -93,8 +93,16 @@ const Hero = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            className="flex gap-4 pt-2"
+            className="flex flex-wrap items-center gap-4 pt-2"
           >
+            <a
+              href="/Dhivyakanth_Resume.pdf"
+              download
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              <Download className="w-4 h-4" />
+              Download Resume
+            </a>
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">/ LinkedIn</a>
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">/ GitHub</a>
             <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">/ LeetCode</a>

@@ -1,7 +1,50 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
+  const { toast } = useToast();
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [sending, setSending] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const trimmed = {
+      name: form.name.trim(),
+      email: form.email.trim(),
+      message: form.message.trim(),
+    };
+
+    if (!trimmed.name || !trimmed.email || !trimmed.message) {
+      toast({ title: "Please fill in all fields", variant: "destructive" });
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed.email)) {
+      toast({ title: "Please enter a valid email", variant: "destructive" });
+      return;
+    }
+
+    setSending(true);
+
+    // Construct mailto link as a simple contact method
+    const subject = encodeURIComponent(`Portfolio Contact from ${trimmed.name}`);
+    const body = encodeURIComponent(`Name: ${trimmed.name}\nEmail: ${trimmed.email}\n\n${trimmed.message}`);
+    window.open(`mailto:dhivyakanth20@gmail.com?subject=${subject}&body=${body}`, "_self");
+
+    setTimeout(() => {
+      setSending(false);
+      setForm({ name: "", email: "", message: "" });
+      toast({ title: "Mail client opened!", description: "Send the email to complete your message." });
+    }, 500);
+  };
+
   return (
     <section id="contact" className="py-24 px-6 md:px-16 lg:px-24">
       <motion.div
@@ -9,44 +52,132 @@ const Contact = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="max-w-3xl mx-auto text-center"
       >
         <p className="section-label mb-3">// Contact</p>
-        <h2 className="font-heading text-3xl md:text-5xl font-bold text-foreground mb-6">
+        <h2 className="font-heading text-3xl md:text-5xl font-bold text-foreground mb-6 text-center">
           Let's Work Together
         </h2>
-        <p className="text-muted-foreground mb-12 max-w-lg mx-auto">
+        <p className="text-muted-foreground mb-16 max-w-lg mx-auto text-center">
           I'm always open to discussing new opportunities, interesting projects, or just a friendly chat about technology.
         </p>
+      </motion.div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
+        {/* Contact Form */}
+        <motion.form
+          onSubmit={handleSubmit}
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="space-y-5"
+        >
+          <div>
+            <label htmlFor="name" className="block text-sm text-muted-foreground mb-1.5">
+              Your Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              maxLength={100}
+              value={form.name}
+              onChange={handleChange}
+              placeholder="John Doe"
+              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-colors"
+            />
+          </div>
+          <div>
+            <label htmlFor="email" className="block text-sm text-muted-foreground mb-1.5">
+              Email Address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              maxLength={255}
+              value={form.email}
+              onChange={handleChange}
+              placeholder="john@example.com"
+              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-colors"
+            />
+          </div>
+          <div>
+            <label htmlFor="message" className="block text-sm text-muted-foreground mb-1.5">
+              Message
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              rows={5}
+              maxLength={1000}
+              value={form.message}
+              onChange={handleChange}
+              placeholder="Tell me about your project..."
+              className="w-full px-4 py-3 rounded-lg bg-card border border-border text-foreground text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 transition-colors resize-none"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={sending}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            <Send className="w-4 h-4" />
+            {sending ? "Opening..." : "Send Message"}
+          </button>
+        </motion.form>
+
+        {/* Contact Info */}
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="space-y-6 flex flex-col justify-center"
+        >
           <a
             href="mailto:dhivyakanth20@gmail.com"
-            className="flex items-center gap-3 px-6 py-3 rounded-full bg-card border border-border hover:border-primary/40 transition-colors text-foreground"
+            className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors text-foreground"
           >
-            <Mail className="w-4 h-4 text-primary" />
-            <span className="text-sm">dhivyakanth20@gmail.com</span>
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Mail className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Email</p>
+              <p className="text-sm font-medium">dhivyakanth20@gmail.com</p>
+            </div>
           </a>
+
           <a
             href="tel:8072181949"
-            className="flex items-center gap-3 px-6 py-3 rounded-full bg-card border border-border hover:border-primary/40 transition-colors text-foreground"
+            className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors text-foreground"
           >
-            <Phone className="w-4 h-4 text-primary" />
-            <span className="text-sm">8072181949</span>
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Phone className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Phone</p>
+              <p className="text-sm font-medium">8072181949</p>
+            </div>
           </a>
-        </div>
 
-        <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm mb-8">
-          <MapPin className="w-4 h-4 text-primary" />
-          Tiruchengode, Namakkal
-        </div>
+          <div className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border text-foreground">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <MapPin className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Location</p>
+              <p className="text-sm font-medium">Tiruchengode, Namakkal</p>
+            </div>
+          </div>
 
-        <div className="flex items-center justify-center gap-6">
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">LinkedIn</a>
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">GitHub</a>
-          <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">LeetCode</a>
-        </div>
-      </motion.div>
+          <div className="flex items-center gap-6 px-6 pt-4">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">LinkedIn</a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">GitHub</a>
+            <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">LeetCode</a>
+          </div>
+        </motion.div>
+      </div>
 
       {/* Footer */}
       <div className="mt-24 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground">
