@@ -1,29 +1,35 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import profileImg from "@/assets/profile.jpg";
 import { Mail, Phone, MapPin, Download } from "lucide-react";
-
-// Floating 3D tech icons data
-const floatingIcons = [
-  { icon: "⚛️", label: "React", x: "12%", y: "25%", size: 48, delay: 0 },
-  { icon: "🐍", label: "Python", x: "85%", y: "20%", size: 44, delay: 0.3 },
-  { icon: "🧠", label: "AI/ML", x: "8%", y: "60%", size: 40, delay: 0.6 },
-  { icon: "☁️", label: "Cloud", x: "90%", y: "55%", size: 42, delay: 0.9 },
-  { icon: "📊", label: "Data", x: "18%", y: "80%", size: 36, delay: 1.2 },
-  { icon: "🔗", label: "IoT", x: "82%", y: "78%", size: 38, delay: 0.5 },
-  { icon: "🗄️", label: "DB", x: "25%", y: "15%", size: 34, delay: 0.8 },
-  { icon: "🚀", label: "Deploy", x: "78%", y: "40%", size: 40, delay: 1.1 },
-];
+import ParticleBackground from "./ParticleBackground";
 
 const Hero = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const imageY = useTransform(scrollYProgress, [0, 1], [0, -40]);
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const bgOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
   return (
     <section
+      ref={sectionRef}
       id="about"
       className="relative min-h-screen flex flex-col justify-center overflow-hidden"
     >
+      {/* Particle Background */}
+      <motion.div className="absolute inset-0" style={{ opacity: bgOpacity }}>
+        <ParticleBackground />
+      </motion.div>
+
       {/* Ambient glow backgrounds */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "var(--gradient-hero)" }} />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full opacity-[0.07] blur-[120px] bg-primary" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full opacity-[0.05] blur-[100px] bg-primary" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full opacity-[0.07] blur-[120px] bg-primary pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full opacity-[0.05] blur-[100px] bg-primary pointer-events-none" />
 
       {/* Nav */}
       <motion.nav
@@ -54,64 +60,38 @@ const Hero = () => {
         </button>
       </motion.nav>
 
-      {/* Floating 3D Tech Icons */}
-      {floatingIcons.map((item, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8 + item.delay, duration: 0.6, type: "spring" }}
-          className="absolute hidden lg:flex items-center justify-center pointer-events-none select-none"
-          style={{ left: item.x, top: item.y, fontSize: item.size }}
-        >
-          <motion.div
-            animate={{
-              y: [0, -12, 0],
-              rotateY: [0, 180, 360],
-            }}
-            transition={{
-              y: { duration: 3 + i * 0.5, repeat: Infinity, ease: "easeInOut" },
-              rotateY: { duration: 6 + i * 0.8, repeat: Infinity, ease: "linear" },
-            }}
-            className="drop-shadow-lg"
-            style={{ perspective: 400 }}
-          >
-            <span className="block" style={{ filter: "drop-shadow(0 4px 12px hsl(152 100% 60% / 0.2))" }}>
-              {item.icon}
-            </span>
-          </motion.div>
-        </motion.div>
-      ))}
-
-      {/* Main Content - Centered Layout */}
+      {/* Main Content - Centered Layout with Parallax */}
       <div className="relative z-10 flex flex-col items-center text-center pt-32 pb-16 px-6">
         {/* Greeting */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          style={{ y: titleY }}
           className="text-primary text-sm font-mono tracking-widest mb-6"
         >
           // Hello World
         </motion.p>
 
-        {/* Big Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="font-heading text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tight text-foreground leading-none whitespace-nowrap"
-        >
-          I'M A FULL
-        </motion.h1>
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45, duration: 0.8 }}
-          className="font-heading text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tight text-foreground leading-none mt-2"
-        >
-          <span className="text-primary">STACK</span> DEVELOPER
-        </motion.h1>
+        {/* Big Title with parallax */}
+        <motion.div style={{ y: titleY }}>
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="font-heading text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tight text-foreground leading-none whitespace-nowrap"
+          >
+            I'M A FULL
+          </motion.h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45, duration: 0.8 }}
+            className="font-heading text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tight text-foreground leading-none mt-2"
+          >
+            <span className="text-primary">STACK</span> DEVELOPER
+          </motion.h1>
+        </motion.div>
 
         {/* Divider line */}
         <motion.div
@@ -121,13 +101,13 @@ const Hero = () => {
           className="w-full max-w-3xl h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent my-10"
         />
 
-        {/* Profile Image with 3D hover */}
+        {/* Profile Image with 3D hover + parallax */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8, rotateX: 15 }}
           animate={{ opacity: 1, scale: 1, rotateX: 0 }}
           transition={{ delay: 0.5, duration: 1, type: "spring" }}
+          style={{ y: imageY }}
           className="relative group mb-10"
-          style={{ perspective: 1000 }}
         >
           <motion.div
             whileHover={{ rotateY: 8, rotateX: -5, scale: 1.03 }}
@@ -143,19 +123,19 @@ const Hero = () => {
               className="w-full h-full object-cover object-top"
             />
             {/* Status dot */}
-            <div className="absolute bottom-6 right-6 z-20 flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-primary animate-pulse" />
+            <div className="absolute bottom-6 right-6 z-20">
+              <span className="w-3 h-3 rounded-full bg-primary animate-pulse block" />
             </div>
           </motion.div>
-          {/* Glow behind image */}
           <div className="absolute -inset-6 rounded-3xl opacity-0 group-hover:opacity-30 blur-3xl bg-primary transition-opacity duration-700 -z-10" />
         </motion.div>
 
-        {/* Description with code-style highlights */}
+        {/* Description with parallax */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
+          style={{ y: contentY }}
           className="max-w-2xl space-y-4 mb-8"
         >
           <p className="font-heading text-sm md:text-base uppercase tracking-wider text-muted-foreground leading-relaxed">
@@ -177,6 +157,7 @@ const Hero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
+          style={{ y: contentY }}
           className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground mb-8"
         >
           <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border">
