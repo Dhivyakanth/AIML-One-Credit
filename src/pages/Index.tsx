@@ -6,10 +6,12 @@ import Education from "@/components/Education";
 import Contact from "@/components/Contact";
 import BackToTop from "@/components/BackToTop";
 import AnimatedSection from "@/components/AnimatedSection";
+import CustomCursor from "@/components/CustomCursor";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background scroll-smooth">
+      <CustomCursor />
       <Hero />
       <AnimatedSection>
         <Skills />
