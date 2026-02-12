@@ -20,12 +20,14 @@ const sections = [
 
 const Index = () => {
   const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const isScrolling = useRef(false);
   const touchStart = useRef(0);
 
   const goTo = (index: number) => {
-    if (index < 0 || index >= sections.length || isScrolling.current) return;
+    if (index < 0 || index >= sections.length || isScrolling.current || index === current) return;
     isScrolling.current = true;
+    setDirection(index > current ? 1 : -1);
     setCurrent(index);
     setTimeout(() => {
       isScrolling.current = false;
@@ -73,8 +75,30 @@ const Index = () => {
     };
   }, [current]);
 
+  const variants = {
+    enter: (dir: number) => ({
+      y: dir > 0 ? "100%" : "-100%",
+      scale: 0.9,
+      borderRadius: "2.5rem",
+      rotateX: dir > 0 ? 8 : -8,
+    }),
+    center: {
+      y: 0,
+      scale: 1,
+      borderRadius: "0rem",
+      rotateX: 0,
+    },
+    exit: (dir: number) => ({
+      y: dir > 0 ? "-40%" : "40%",
+      scale: 0.85,
+      opacity: 0,
+      borderRadius: "2.5rem",
+      rotateX: dir > 0 ? -6 : 6,
+    }),
+  };
+
   return (
-    <div className="h-screen bg-background overflow-hidden relative">
+    <div className="h-screen bg-background overflow-hidden relative" style={{ perspective: "1200px" }}>
       <CustomCursor />
 
       {/* Section dots nav */}
@@ -83,28 +107,38 @@ const Index = () => {
           <button
             key={s.id}
             onClick={() => goTo(i)}
-            className={`w-2.5 h-2.5 rounded-full border border-border transition-all duration-300 ${
-              i === current
-                ? "bg-primary border-primary scale-125"
-                : "bg-transparent hover:bg-muted"
-            }`}
+            className="group relative flex items-center justify-end"
             aria-label={`Go to ${s.id}`}
-          />
+          >
+            <span className={`absolute right-5 text-[10px] font-mono uppercase tracking-wider transition-all duration-300 whitespace-nowrap ${
+              i === current ? "opacity-100 translate-x-0 text-primary" : "opacity-0 translate-x-2 text-muted-foreground group-hover:opacity-70 group-hover:translate-x-0"
+            }`}>
+              {s.id}
+            </span>
+            <span className={`block rounded-full transition-all duration-400 ${
+              i === current
+                ? "w-3 h-3 bg-primary shadow-[0_0_12px_hsl(152_100%_60%/0.5)]"
+                : "w-2 h-2 bg-muted-foreground/30 hover:bg-muted-foreground/60"
+            }`} />
+          </button>
         ))}
       </div>
 
-      {/* Stacked card sections */}
-      <AnimatePresence mode="popLayout">
+      {/* Stacked card sections with bidirectional shuffle */}
+      <AnimatePresence mode="popLayout" custom={direction}>
         <motion.div
           key={current}
-          initial={{ y: "100%", scale: 0.92, borderRadius: "2rem" }}
-          animate={{ y: 0, scale: 1, borderRadius: "0rem" }}
-          exit={{ y: "-30%", scale: 0.88, opacity: 0, borderRadius: "2rem" }}
+          custom={direction}
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
           transition={{
-            duration: 0.7,
+            duration: 0.75,
             ease: [0.32, 0.72, 0, 1],
           }}
-          className="absolute inset-0 bg-background overflow-y-auto"
+          className="absolute inset-0 bg-background overflow-y-auto origin-center"
+          style={{ transformStyle: "preserve-3d" }}
         >
           {(() => {
             const { Component } = sections[current];
