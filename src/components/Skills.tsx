@@ -4,44 +4,22 @@ const skillCategories = [
   {
     title: "Programming Languages",
     icon: "{ }",
-    skills: [
-      { name: "Java", level: 85 },
-      { name: "Python", level: 90 },
-      { name: "C", level: 75 },
-      { name: "JavaScript", level: 88 },
-      { name: "SQL", level: 80 },
-    ],
+    skills: ["Java", "Python", "C", "JavaScript", "SQL"],
   },
   {
     title: "Web Technologies",
     icon: "</>",
-    skills: [
-      { name: "HTML", level: 95 },
-      { name: "CSS", level: 90 },
-      { name: "React JS", level: 85 },
-      { name: "Node.js", level: 80 },
-      { name: "Express.js", level: 78 },
-    ],
+    skills: ["HTML", "CSS", "React JS", "Node.js", "Express.js"],
   },
   {
     title: "AI / ML",
     icon: "⚡",
-    skills: [
-      { name: "Machine Learning", level: 82 },
-      { name: "Computer Vision", level: 85 },
-      { name: "TensorFlow", level: 78 },
-      { name: "MediaPipe", level: 80 },
-    ],
+    skills: ["Machine Learning", "Computer Vision", "TensorFlow", "MediaPipe"],
   },
   {
     title: "Tools & Platforms",
     icon: "⚙️",
-    skills: [
-      { name: "Power BI", level: 75 },
-      { name: "JDBC", level: 70 },
-      { name: "GitHub", level: 90 },
-      { name: "REST APIs", level: 88 },
-    ],
+    skills: ["Power BI", "JDBC", "GitHub", "REST APIs"],
   },
 ];
 
@@ -124,25 +102,19 @@ const Skills = () => {
                 </span>
               </div>
 
-              <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
                 {cat.skills.map((skill, j) => (
-                  <div key={skill.name} className="group/skill">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-muted-foreground group-hover/skill:text-foreground transition-colors">
-                        {skill.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground font-mono">{skill.level}%</span>
-                    </div>
-                    <div className="w-full h-1 bg-secondary rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.3 + j * 0.08, duration: 0.8, ease: "easeOut" }}
-                        className="h-full bg-gradient-to-r from-primary/60 to-primary rounded-full"
-                      />
-                    </div>
-                  </div>
+                  <motion.span
+                    key={skill}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 + j * 0.06, duration: 0.4 }}
+                    whileHover={{ scale: 1.08, y: -2 }}
+                    className="px-4 py-2 rounded-full bg-secondary/80 text-secondary-foreground text-sm font-medium border border-border/50 hover:border-primary/50 hover:bg-primary/10 hover:text-primary transition-colors duration-300 cursor-default"
+                  >
+                    {skill}
+                  </motion.span>
                 ))}
               </div>
             </motion.div>
