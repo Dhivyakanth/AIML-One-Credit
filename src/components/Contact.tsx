@@ -137,6 +137,7 @@ const Contact = () => {
         >
           <a
             href="mailto:dhivyakanth20@gmail.com"
+            data-cursor-text="Email"
             className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors text-foreground"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -150,6 +151,7 @@ const Contact = () => {
 
           <a
             href="tel:8072181949"
+            data-cursor-text="Call"
             className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors text-foreground"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
