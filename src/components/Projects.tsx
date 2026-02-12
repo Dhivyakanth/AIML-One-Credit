@@ -87,6 +87,7 @@ const Projects = () => {
             viewport={{ once: true }}
             transition={{ delay: i * 0.15, duration: 0.6 }}
             whileHover={{ y: -4 }}
+            data-cursor-text="View"
             className="group relative rounded-2xl bg-card/80 backdrop-blur-sm border border-border overflow-hidden hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_60px_hsl(152_100%_60%/0.08)]"
           >
             {/* Gradient accent */}

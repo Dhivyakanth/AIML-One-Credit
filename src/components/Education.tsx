@@ -27,6 +27,7 @@ const Education = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
+            data-cursor-text="Education"
             className="rounded-xl bg-card border border-border p-6"
           >
             <h4 className="font-heading font-semibold text-foreground">

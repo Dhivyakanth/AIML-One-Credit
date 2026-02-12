@@ -67,6 +67,7 @@ const Experience = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.15, duration: 0.5 }}
+              data-cursor-text="Details"
               className="group"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">

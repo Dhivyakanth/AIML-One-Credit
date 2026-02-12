@@ -86,6 +86,7 @@ const Skills = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
+              data-cursor-text="Explore"
               className="group rounded-xl bg-card/80 backdrop-blur-sm border border-border p-6 hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_40px_hsl(152_100%_60%/0.06)]"
             >
               <div className="flex items-center justify-between mb-5">
