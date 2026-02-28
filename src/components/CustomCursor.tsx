@@ -99,8 +99,8 @@ const CustomCursor = () => {
       >
         <motion.div
           animate={{
-            width: isHovering ? 90 : 50,
-            height: isHovering ? 90 : 50,
+            width: isHovering ? 44 : 30,
+            height: isHovering ? 44 : 30,
             opacity: isClicking ? 0.15 : 0.08,
           }}
           transition={{ type: "spring", damping: 20, stiffness: 150 }}
@@ -118,8 +118,8 @@ const CustomCursor = () => {
       >
         <motion.div
           animate={{
-            width: isHovering ? (cursorText ? 100 : 56) : 32,
-            height: isHovering ? (cursorText ? 100 : 56) : 32,
+            width: isHovering ? (cursorText ? 56 : 32) : 20,
+            height: isHovering ? (cursorText ? 56 : 32) : 20,
             opacity: isHovering ? 0.6 : 0.25,
             rotate: isHovering ? 0 : 45,
           }}
@@ -140,8 +140,8 @@ const CustomCursor = () => {
       >
         <motion.div
           animate={{
-            width: isHovering ? (cursorText ? 88 : 52) : 8,
-            height: isHovering ? (cursorText ? 88 : 52) : 8,
+            width: isHovering ? (cursorText ? 52 : 28) : 8,
+            height: isHovering ? (cursorText ? 52 : 28) : 8,
             scale: isClicking ? 0.75 : 1,
           }}
           transition={{ type: "spring", damping: 22, stiffness: 350 }}
