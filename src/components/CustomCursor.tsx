@@ -1,5 +1,5 @@
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const CustomCursor = () => {
   const cursorX = useMotionValue(-100);
@@ -7,44 +7,21 @@ const CustomCursor = () => {
   const [isHovering, setIsHovering] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
   const [cursorText, setCursorText] = useState("");
-  const velocityX = useRef(0);
-  const velocityY = useRef(0);
-  const prevX = useRef(0);
-  const prevY = useRef(0);
 
-  // Smooth spring for main cursor
-  const springConfig = { damping: 28, stiffness: 400, mass: 0.3 };
+  // Fast dot
+  const springConfig = { damping: 30, stiffness: 500, mass: 0.2 };
   const x = useSpring(cursorX, springConfig);
   const y = useSpring(cursorY, springConfig);
 
-  // Slower trailing ring
-  const trailConfig = { damping: 40, stiffness: 150, mass: 0.8 };
+  // Trailing ring
+  const trailConfig = { damping: 35, stiffness: 180, mass: 0.5 };
   const trailX = useSpring(cursorX, trailConfig);
   const trailY = useSpring(cursorY, trailConfig);
-
-  // Even slower outer glow
-  const glowConfig = { damping: 50, stiffness: 80, mass: 1.2 };
-  const glowX = useSpring(cursorX, glowConfig);
-  const glowY = useSpring(cursorY, glowConfig);
-
-  // Rotation based on movement
-  const rotate = useMotionValue(0);
-  const smoothRotate = useSpring(rotate, { damping: 30, stiffness: 200 });
 
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
-
-      // Calculate velocity for rotation
-      velocityX.current = e.clientX - prevX.current;
-      velocityY.current = e.clientY - prevY.current;
-      prevX.current = e.clientX;
-      prevY.current = e.clientY;
-
-      const angle = Math.atan2(velocityY.current, velocityX.current) * (180 / Math.PI);
-      const speed = Math.sqrt(velocityX.current ** 2 + velocityY.current ** 2);
-      if (speed > 3) rotate.set(angle);
     };
 
     const handleMouseDown = () => setIsClicking(true);
@@ -80,7 +57,7 @@ const CustomCursor = () => {
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("mouseover", handleMouseOver);
     };
-  }, [cursorX, cursorY, rotate]);
+  }, [cursorX, cursorY]);
 
   // Hide on touch devices
   const [isTouchDevice, setIsTouchDevice] = useState(false);
@@ -92,111 +69,57 @@ const CustomCursor = () => {
 
   return (
     <>
-      {/* Outer glow trail - slowest */}
-      <motion.div
-        className="fixed top-0 left-0 z-[9996] pointer-events-none"
-        style={{ x: glowX, y: glowY }}
-      >
-        <motion.div
-          animate={{
-            width: isHovering ? 44 : 30,
-            height: isHovering ? 44 : 30,
-            opacity: isClicking ? 0.15 : 0.08,
-          }}
-          transition={{ type: "spring", damping: 20, stiffness: 150 }}
-          className="rounded-full -translate-x-1/2 -translate-y-1/2"
-          style={{
-            background: "radial-gradient(circle, hsl(152 100% 60% / 0.2) 0%, transparent 70%)",
-          }}
-        />
-      </motion.div>
-
-      {/* Trail ring - medium speed */}
+      {/* Trailing ring */}
       <motion.div
         className="fixed top-0 left-0 z-[9997] pointer-events-none"
         style={{ x: trailX, y: trailY }}
       >
         <motion.div
           animate={{
-            width: isHovering ? (cursorText ? 56 : 32) : 20,
-            height: isHovering ? (cursorText ? 56 : 32) : 20,
-            opacity: isHovering ? 0.6 : 0.25,
-            rotate: isHovering ? 0 : 45,
+            width: isHovering ? (cursorText ? 64 : 40) : 28,
+            height: isHovering ? (cursorText ? 64 : 40) : 28,
+            borderWidth: isHovering ? 2 : 1,
+            opacity: isClicking ? 0.4 : 0.6,
           }}
-          transition={{ type: "spring", damping: 25, stiffness: 180 }}
-          className="-translate-x-1/2 -translate-y-1/2"
+          transition={{ type: "spring", damping: 20, stiffness: 200 }}
+          className="-translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center"
           style={{
-            borderRadius: isHovering ? "50%" : "30%",
-            border: "1px solid hsl(152 100% 60% / 0.3)",
-            transition: "border-radius 0.4s ease",
+            borderColor: "hsl(var(--primary))",
+            borderStyle: "solid",
+            background: isHovering
+              ? "hsl(var(--primary) / 0.06)"
+              : "transparent",
           }}
-        />
+        >
+          {cursorText && (
+            <motion.span
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-[9px] font-bold tracking-widest uppercase whitespace-nowrap text-primary"
+            >
+              {cursorText}
+            </motion.span>
+          )}
+        </motion.div>
       </motion.div>
 
-      {/* Main cursor dot - fastest */}
+      {/* Main dot */}
       <motion.div
         className="fixed top-0 left-0 z-[9999] pointer-events-none"
         style={{ x, y }}
       >
         <motion.div
           animate={{
-            width: isHovering ? (cursorText ? 52 : 28) : 8,
-            height: isHovering ? (cursorText ? 52 : 28) : 8,
-            scale: isClicking ? 0.75 : 1,
+            width: isHovering ? 6 : 6,
+            height: isHovering ? 6 : 6,
+            scale: isClicking ? 2.5 : isHovering ? 0 : 1,
           }}
-          transition={{ type: "spring", damping: 22, stiffness: 350 }}
-          className="rounded-full -translate-x-1/2 -translate-y-1/2 flex items-center justify-center overflow-hidden"
+          transition={{ type: "spring", damping: 25, stiffness: 400 }}
+          className="rounded-full -translate-x-1/2 -translate-y-1/2 bg-primary"
           style={{
-            background: isHovering
-              ? "radial-gradient(circle at 30% 30%, hsl(152 100% 70% / 0.2), hsl(152 100% 50% / 0.08))"
-              : "hsl(152 100% 60%)",
-            border: isHovering
-              ? "1.5px solid hsl(152 100% 60% / 0.5)"
-              : "none",
-            backdropFilter: isHovering ? "blur(8px)" : "none",
-            boxShadow: isHovering
-              ? "0 0 20px hsl(152 100% 60% / 0.15), inset 0 0 20px hsl(152 100% 60% / 0.05)"
-              : "0 0 8px hsl(152 100% 60% / 0.5)",
+            boxShadow: "0 0 6px hsl(var(--primary) / 0.6)",
           }}
-        >
-          {cursorText && (
-            <motion.span
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-[11px] font-semibold tracking-wider uppercase whitespace-nowrap"
-              style={{ color: "hsl(152 100% 60%)" }}
-            >
-              {cursorText}
-            </motion.span>
-          )}
-
-          {/* Inner spinning accent for default state */}
-          {!isHovering && (
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0"
-              style={{
-                background: "conic-gradient(from 0deg, transparent 0%, hsl(152 100% 80% / 0.6) 10%, transparent 20%)",
-                borderRadius: "50%",
-              }}
-            />
-          )}
-        </motion.div>
-      </motion.div>
-
-      {/* Crosshair lines when not hovering */}
-      <motion.div
-        className="fixed top-0 left-0 z-[9998] pointer-events-none"
-        style={{ x, y }}
-        animate={{ opacity: isHovering ? 0 : 0.15 }}
-      >
-        <div className="relative -translate-x-1/2 -translate-y-1/2">
-          <div className="absolute w-px h-5 bg-primary -top-4 left-0" />
-          <div className="absolute w-px h-5 bg-primary top-1 left-0" />
-          <div className="absolute w-5 h-px bg-primary top-0 -left-4" />
-          <div className="absolute w-5 h-px bg-primary top-0 left-1" />
-        </div>
+        />
       </motion.div>
 
       {/* Global cursor hide */}
