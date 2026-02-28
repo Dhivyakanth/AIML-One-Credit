@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import profileImg from "@/assets/profile.jpg";
 import { Mail, Phone, MapPin, Download } from "lucide-react";
-import ParticleBackground from "./ParticleBackground";
+import VolcanoBackground from "./VolcanoBackground";
 
 const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -24,7 +24,7 @@ const Hero = () => {
     >
       {/* Particle Background */}
       <motion.div className="absolute inset-0" style={{ opacity: bgOpacity }}>
-        <ParticleBackground />
+        <VolcanoBackground eruptionIntensity={0.6} meteorCount={3} starCount={60} enableEmbers={true} simulationSpeed={0.8} />
       </motion.div>
 
       {/* Ambient glow backgrounds */}
@@ -207,16 +207,6 @@ const Hero = () => {
         <span className="text-primary font-mono text-sm">&gt;</span>
       </motion.div>
 
-      {/* Marquee */}
-      <div className="mt-8 overflow-hidden border-y border-border py-4 opacity-10">
-        <div className="animate-marquee whitespace-nowrap flex">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <span key={i} className="font-heading text-6xl font-bold mx-8 text-foreground">
-              DHIVYAKANTH P
-            </span>
-          ))}
-        </div>
-      </div>
 
       {/* Scroll indicator */}
       <motion.div
