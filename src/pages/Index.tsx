@@ -43,17 +43,18 @@ const SectionWrapper = ({
     <motion.section
       ref={ref}
       id={id}
-      initial={{ opacity: 0, y: 60, scale: 0.96 }}
+      initial={{ opacity: 0, y: 80, scale: 0.95 }}
       animate={
         isInView
           ? { opacity: 1, y: 0, scale: 1 }
-          : { opacity: 0, y: 60, scale: 0.96 }
+          : { opacity: 0, y: 80, scale: 0.95 }
       }
       transition={{
-        duration: 0.7,
-        ease: [0.22, 1, 0.36, 1],
+        duration: 0.8,
+        ease: [0.16, 1, 0.3, 1],
+        scale: { duration: 0.6 },
       }}
-      className="min-h-screen relative origin-top"
+      className="min-h-screen relative origin-top will-change-transform"
     >
       {children}
     </motion.section>
