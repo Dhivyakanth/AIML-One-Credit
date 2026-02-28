@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import Hero from "@/components/Hero";
 import Skills from "@/components/Skills";
 import Experience from "@/components/Experience";
@@ -18,23 +18,42 @@ const sections = [
   { id: "contact", Component: Contact },
 ];
 
-const SectionWrapper = ({ id, children, index }: { id: string; children: React.ReactNode; index: number }) => {
+const SectionWrapper = ({
+  id,
+  children,
+  index,
+}: {
+  id: string;
+  children: React.ReactNode;
+  index: number;
+}) => {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+  const isInView = useInView(ref, { once: false, margin: "-10% 0px" });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [80, 0, 0, -80]);
-  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.95, 1, 1, 0.95]);
+  // Hero section is always fully visible
+  if (index === 0) {
+    return (
+      <section id={id} className="min-h-screen relative">
+        {children}
+      </section>
+    );
+  }
 
   return (
     <motion.section
       ref={ref}
       id={id}
-      style={{ opacity, y, scale }}
-      className="min-h-screen relative"
+      initial={{ opacity: 0, y: 60, scale: 0.96 }}
+      animate={
+        isInView
+          ? { opacity: 1, y: 0, scale: 1 }
+          : { opacity: 0, y: 60, scale: 0.96 }
+      }
+      transition={{
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="min-h-screen relative origin-top"
     >
       {children}
     </motion.section>
@@ -43,10 +62,9 @@ const SectionWrapper = ({ id, children, index }: { id: string; children: React.R
 
 const Index = () => {
   return (
-    <div className="bg-background relative">
+    <div className="bg-background relative overflow-x-hidden">
       <CustomCursor />
 
-      {/* Smooth scrollable sections with parallax fade */}
       {sections.map((s, i) => (
         <SectionWrapper key={s.id} id={s.id} index={i}>
           <s.Component />
