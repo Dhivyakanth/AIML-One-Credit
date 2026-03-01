@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import Hero from "@/components/Hero";
 import Skills from "@/components/Skills";
 import Experience from "@/components/Experience";
@@ -18,6 +18,20 @@ const sections = [
   { id: "contact", Component: Contact },
 ];
 
+const sectionVariants = {
+  hidden: { opacity: 0, y: 60 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+      staggerChildren: 0.08,
+      when: "beforeChildren" as const,
+    },
+  },
+};
+
 const SectionWrapper = ({
   id,
   children,
@@ -28,9 +42,8 @@ const SectionWrapper = ({
   index: number;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false, margin: "-10% 0px" });
+  const isInView = useInView(ref, { once: false, margin: "-5% 0px -5% 0px" });
 
-  // Hero section is always fully visible
   if (index === 0) {
     return (
       <section id={id} className="min-h-screen relative">
@@ -43,18 +56,10 @@ const SectionWrapper = ({
     <motion.section
       ref={ref}
       id={id}
-      initial={{ opacity: 0, y: 80, scale: 0.95 }}
-      animate={
-        isInView
-          ? { opacity: 1, y: 0, scale: 1 }
-          : { opacity: 0, y: 80, scale: 0.95 }
-      }
-      transition={{
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1],
-        scale: { duration: 0.6 },
-      }}
-      className="min-h-screen relative origin-top will-change-transform"
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
+      variants={sectionVariants}
+      className="min-h-screen relative will-change-[opacity,transform]"
     >
       {children}
     </motion.section>
