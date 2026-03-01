@@ -8,6 +8,7 @@ import Education from "@/components/Education";
 import Contact from "@/components/Contact";
 import BackToTop from "@/components/BackToTop";
 import CustomCursor from "@/components/CustomCursor";
+import Starfield from "@/components/Starfield";
 
 const sections = [
   { id: "hero", Component: Hero },
@@ -17,20 +18,6 @@ const sections = [
   { id: "education", Component: Education },
   { id: "contact", Component: Contact },
 ];
-
-const sectionVariants = {
-  hidden: { opacity: 0, y: 60 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
-      staggerChildren: 0.08,
-      when: "beforeChildren" as const,
-    },
-  },
-};
 
 const SectionWrapper = ({
   id,
@@ -42,7 +29,7 @@ const SectionWrapper = ({
   index: number;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false, margin: "-5% 0px -5% 0px" });
+  const isInView = useInView(ref, { once: true, margin: "-10% 0px" });
 
   if (index === 0) {
     return (
@@ -56,10 +43,13 @@ const SectionWrapper = ({
     <motion.section
       ref={ref}
       id={id}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={sectionVariants}
-      className="min-h-screen relative will-change-[opacity,transform]"
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{
+        duration: 0.7,
+        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+      }}
+      className="relative"
     >
       {children}
     </motion.section>
@@ -69,13 +59,20 @@ const SectionWrapper = ({
 const Index = () => {
   return (
     <div className="bg-background relative overflow-x-hidden">
+      {/* Global starfield behind all sections */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <Starfield />
+      </div>
+
       <CustomCursor />
 
-      {sections.map((s, i) => (
-        <SectionWrapper key={s.id} id={s.id} index={i}>
-          <s.Component />
-        </SectionWrapper>
-      ))}
+      <div className="relative z-10">
+        {sections.map((s, i) => (
+          <SectionWrapper key={s.id} id={s.id} index={i}>
+            <s.Component />
+          </SectionWrapper>
+        ))}
+      </div>
 
       <BackToTop />
     </div>
