@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import profileImg from "@/assets/profile.jpg";
 import { Mail, Phone, MapPin, Download } from "lucide-react";
-
+import Starfield from "./Starfield";
 
 const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -22,10 +22,10 @@ const Hero = () => {
       id="about"
       className="relative min-h-screen flex flex-col justify-center overflow-hidden"
     >
-      {/* Subtle animated gradient background */}
+      {/* Starfield background */}
       <motion.div className="absolute inset-0" style={{ opacity: bgOpacity }}>
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.08)_0%,transparent_70%)]" />
+        <Starfield />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.06)_0%,transparent_60%)]" />
       </motion.div>
 
       {/* Ambient glow backgrounds */}
