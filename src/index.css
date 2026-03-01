@@ -104,3 +104,7 @@
   text-transform: uppercase;
   color: hsl(var(--primary));
 }
+
+html {
+  scroll-behavior: smooth;
+}
