@@ -10,8 +10,14 @@ const Hero = () => {
     offset: ["start start", "end start"],
   });
 
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, -80]);
-  const imageY = useTransform(scrollYProgress, [0, 1], [0, -40]);
+  // Text moves up faster (goes behind image)
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0.3]);
+  
+  // Image moves up slower, creating the overlap effect
+  const imageY = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const imageScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.05]);
+  
   const contentY = useTransform(scrollYProgress, [0, 1], [0, -60]);
   const bgOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
@@ -60,20 +66,23 @@ const Hero = () => {
       </motion.nav>
 
       {/* Main Content - Centered Layout with Parallax */}
-      <div className="relative z-10 flex flex-col items-center text-center pt-32 pb-16 px-6">
+      <div className="relative flex flex-col items-center text-center pt-32 pb-16 px-6">
         {/* Greeting */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           style={{ y: titleY }}
-          className="text-primary text-sm font-mono tracking-widest mb-6"
+          className="text-primary text-sm font-mono tracking-widest mb-6 z-[1]"
         >
           // Hello World
         </motion.p>
 
-        {/* Big Title with parallax */}
-        <motion.div style={{ y: titleY }}>
+        {/* Big Title - z-[1] so it goes BEHIND the image (z-[5]) on scroll */}
+        <motion.div 
+          style={{ y: titleY, opacity: titleOpacity }} 
+          className="z-[1] will-change-transform"
+        >
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -97,16 +106,17 @@ const Hero = () => {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.7, duration: 0.8 }}
-          className="w-full max-w-3xl h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent my-10"
+          style={{ y: titleY, opacity: titleOpacity }}
+          className="w-full max-w-3xl h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent my-10 z-[1]"
         />
 
-        {/* Profile Image with 3D hover + parallax */}
+        {/* Profile Image - z-[5] so it overlaps the title text on scroll */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8, rotateX: 15 }}
           animate={{ opacity: 1, scale: 1, rotateX: 0 }}
           transition={{ delay: 0.5, duration: 1, type: "spring" }}
-          style={{ y: imageY }}
-          className="relative group mb-10"
+          style={{ y: imageY, scale: imageScale }}
+          className="relative group mb-10 z-[5] will-change-transform"
         >
           <motion.div
             whileHover={{ rotateY: 8, rotateX: -5, scale: 1.03 }}
@@ -135,7 +145,7 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
           style={{ y: contentY }}
-          className="max-w-2xl space-y-4 mb-8"
+          className="max-w-2xl space-y-4 mb-8 z-[5]"
         >
           <p className="font-heading text-sm md:text-base uppercase tracking-wider text-muted-foreground leading-relaxed">
             <span className="text-primary font-mono">&lt;p&gt;</span> I craft fast, scalable, and{" "}
@@ -157,7 +167,7 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
           style={{ y: contentY }}
-          className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground mb-8"
+          className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground mb-8 z-[5]"
         >
           <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border">
             <Mail className="w-4 h-4 text-primary" />
@@ -178,12 +188,12 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1 }}
-          className="flex flex-wrap items-center justify-center gap-4"
+          className="flex flex-wrap items-center justify-center gap-4 z-[5]"
         >
           <a
             href="/Dhivyakanth_Resume.pdf"
             download
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:scale-105 hover:shadow-[0_0_30px_hsl(152_100%_60%/0.3)] transition-all duration-300"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:scale-105 hover:shadow-[0_0_30px_hsl(var(--primary)/0.3)] transition-all duration-300"
           >
             <Download className="w-4 h-4" />
             My Resume
@@ -205,7 +215,6 @@ const Hero = () => {
         <div className="flex-1 max-w-3xl h-px bg-gradient-to-r from-primary/40 via-primary/20 to-primary/40" />
         <span className="text-primary font-mono text-sm">&gt;</span>
       </motion.div>
-
 
       {/* Scroll indicator */}
       <motion.div

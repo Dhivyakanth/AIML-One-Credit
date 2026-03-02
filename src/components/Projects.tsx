@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ExternalLink, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 const projects = [
   {
@@ -31,6 +31,21 @@ const projects = [
   },
 ];
 
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.18 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 60, scale: 0.96 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  },
+};
+
 const Projects = () => {
   return (
     <section id="projects" className="py-24 px-6 md:px-16 lg:px-24 relative overflow-hidden">
@@ -42,8 +57,8 @@ const Projects = () => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <p className="section-label mb-3">// Projects</p>
           <h2 className="font-heading text-3xl md:text-5xl font-bold text-foreground">
@@ -52,10 +67,10 @@ const Projects = () => {
         </motion.div>
 
         <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
           className="text-sm text-muted-foreground max-w-sm mt-4 lg:mt-0 leading-relaxed"
         >
           <span className="text-primary font-mono">&lt;p&gt;</span> Each project represents a unique challenge
@@ -77,18 +92,21 @@ const Projects = () => {
         <span className="text-primary font-mono text-sm">&gt;</span>
       </motion.div>
 
-      {/* Project cards - stacked full width */}
-      <div className="space-y-6">
+      {/* Project cards - staggered */}
+      <motion.div
+        className="space-y-6"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+      >
         {projects.map((project, i) => (
           <motion.div
             key={project.title}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.15, duration: 0.6 }}
-            whileHover={{ y: -4 }}
+            variants={cardVariants}
+            whileHover={{ y: -6, transition: { duration: 0.3 } }}
             data-cursor-text="View"
-            className="group relative rounded-2xl bg-card/80 backdrop-blur-sm border border-border overflow-hidden hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_60px_hsl(152_100%_60%/0.08)]"
+            className="group relative rounded-2xl bg-card/80 backdrop-blur-sm border border-border overflow-hidden hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_60px_hsl(var(--primary)/0.08)]"
           >
             {/* Gradient accent */}
             <div className={`absolute inset-0 bg-gradient-to-br ${project.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} />
@@ -140,12 +158,12 @@ const Projects = () => {
               initial={{ scaleX: 0 }}
               whileInView={{ scaleX: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.5 + i * 0.2, duration: 1 }}
+              transition={{ delay: 0.3 + i * 0.15, duration: 1, ease: "easeOut" }}
               className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent origin-left"
             />
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 };

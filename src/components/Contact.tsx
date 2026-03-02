@@ -3,6 +3,20 @@ import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  },
+};
+
 const Contact = () => {
   const { toast } = useToast();
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -33,7 +47,6 @@ const Contact = () => {
 
     setSending(true);
 
-    // Construct mailto link as a simple contact method
     const subject = encodeURIComponent(`Portfolio Contact from ${trimmed.name}`);
     const body = encodeURIComponent(`Name: ${trimmed.name}\nEmail: ${trimmed.email}\n\n${trimmed.message}`);
     window.open(`mailto:dhivyakanth20@gmail.com?subject=${subject}&body=${body}`, "_self");
@@ -50,8 +63,8 @@ const Contact = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
         <p className="section-label mb-3">// Contact</p>
         <h2 className="font-heading text-3xl md:text-5xl font-bold text-foreground mb-6 text-center">
@@ -62,14 +75,17 @@ const Contact = () => {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
+      <motion.div
+        className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+      >
         {/* Contact Form */}
         <motion.form
           onSubmit={handleSubmit}
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          variants={itemVariants}
           className="space-y-5"
         >
           <div>
@@ -129,16 +145,14 @@ const Contact = () => {
 
         {/* Contact Info */}
         <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          variants={containerVariants}
           className="space-y-6 flex flex-col justify-center"
         >
-          <a
+          <motion.a
             href="mailto:dhivyakanth20@gmail.com"
+            variants={itemVariants}
             data-cursor-text="Email"
-            className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors text-foreground"
+            className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors duration-300 text-foreground"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <Mail className="w-5 h-5 text-primary" />
@@ -147,12 +161,13 @@ const Contact = () => {
               <p className="text-xs text-muted-foreground">Email</p>
               <p className="text-sm font-medium">dhivyakanth20@gmail.com</p>
             </div>
-          </a>
+          </motion.a>
 
-          <a
+          <motion.a
             href="tel:8072181949"
+            variants={itemVariants}
             data-cursor-text="Call"
-            className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors text-foreground"
+            className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors duration-300 text-foreground"
           >
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <Phone className="w-5 h-5 text-primary" />
@@ -161,9 +176,12 @@ const Contact = () => {
               <p className="text-xs text-muted-foreground">Phone</p>
               <p className="text-sm font-medium">8072181949</p>
             </div>
-          </a>
+          </motion.a>
 
-          <div className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border text-foreground">
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center gap-4 px-6 py-4 rounded-xl bg-card border border-border text-foreground"
+          >
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <MapPin className="w-5 h-5 text-primary" />
             </div>
@@ -171,21 +189,27 @@ const Contact = () => {
               <p className="text-xs text-muted-foreground">Location</p>
               <p className="text-sm font-medium">Tiruchengode, Namakkal</p>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="flex items-center gap-6 px-6 pt-4">
+          <motion.div variants={itemVariants} className="flex items-center gap-6 px-6 pt-4">
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">LinkedIn</a>
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">GitHub</a>
             <a href="https://leetcode.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors text-sm">LeetCode</a>
-          </div>
+          </motion.div>
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* Footer */}
-      <div className="mt-24 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground">
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.3, duration: 0.6 }}
+        className="mt-24 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground"
+      >
         <span>© 2025 Dhivyakanth P. All rights reserved.</span>
         <span className="mt-2 sm:mt-0">Aspiring AI Full-Stack Developer</span>
-      </div>
+      </motion.div>
     </section>
   );
 };

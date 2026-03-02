@@ -23,6 +23,33 @@ const skillCategories = [
   },
 ];
 
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.12 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 50, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  },
+};
+
+const skillPillVariants = {
+  hidden: { opacity: 0, scale: 0.7, y: 10 },
+  visible: (j: number) => ({
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { delay: j * 0.05, duration: 0.4, ease: "easeOut" as const },
+  }),
+};
+
 const Skills = () => {
   return (
     <section id="skills" className="py-24 px-6 md:px-16 lg:px-24 relative overflow-hidden">
@@ -34,8 +61,8 @@ const Skills = () => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="lg:w-1/3 lg:sticky lg:top-32 lg:self-start"
         >
           <p className="section-label mb-3">// Skills</p>
@@ -60,7 +87,7 @@ const Skills = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.3 + i * 0.1 }}
+                transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
                 className="text-center"
               >
                 <p className="font-heading text-3xl font-bold text-primary">{stat.value}</p>
@@ -77,17 +104,20 @@ const Skills = () => {
           </div>
         </motion.div>
 
-        {/* Right skill cards */}
-        <div className="lg:w-2/3 space-y-6">
+        {/* Right skill cards - staggered container */}
+        <motion.div
+          className="lg:w-2/3 space-y-6"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+        >
           {skillCategories.map((cat, i) => (
             <motion.div
               key={cat.title}
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
+              variants={cardVariants}
               data-cursor-text="Explore"
-              className="group rounded-xl bg-card/80 backdrop-blur-sm border border-border p-6 hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_40px_hsl(152_100%_60%/0.06)]"
+              className="group rounded-xl bg-card/80 backdrop-blur-sm border border-border p-6 hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_40px_hsl(var(--primary)/0.06)]"
             >
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
@@ -103,24 +133,28 @@ const Skills = () => {
                 </span>
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <motion.div
+                className="flex flex-wrap gap-2"
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+              >
                 {cat.skills.map((skill, j) => (
                   <motion.span
                     key={skill}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.2 + j * 0.06, duration: 0.4 }}
+                    custom={j}
+                    variants={skillPillVariants}
                     whileHover={{ scale: 1.08, y: -2 }}
                     className="px-4 py-2 rounded-full bg-secondary/80 text-secondary-foreground text-sm font-medium border border-border/50 hover:border-primary/50 hover:bg-primary/10 hover:text-primary transition-colors duration-300 cursor-default"
                   >
                     {skill}
                   </motion.span>
                 ))}
-              </div>
+              </motion.div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
