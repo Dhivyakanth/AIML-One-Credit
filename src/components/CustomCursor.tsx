@@ -17,11 +17,11 @@ interface Particle {
 }
 
 const STAR_COLORS = [
-  "hsl(152, 100%, 60%)",   // primary green
-  "hsl(152, 80%, 75%)",    // lighter green
-  "hsl(160, 100%, 50%)",   // teal green
-  "hsl(140, 90%, 65%)",    // warm green
-  "hsl(180, 60%, 70%)",    // cyan accent
+  "hsl(210, 90%, 65%)",    // primary blue
+  "hsl(210, 80%, 80%)",    // lighter blue
+  "hsl(220, 100%, 60%)",   // deeper blue
+  "hsl(200, 90%, 65%)",    // sky blue
+  "hsl(195, 70%, 75%)",    // cyan accent
   "hsl(0, 0%, 95%)",       // white sparkle
 ];
 
@@ -181,8 +181,8 @@ const CustomCursor = () => {
         const dotSize = isHovering ? 8 : 4;
         const dotGlow = isHovering ? 20 : 10;
         ctx.shadowBlur = dotGlow;
-        ctx.shadowColor = "hsl(152, 100%, 60%)";
-        ctx.fillStyle = "hsl(152, 100%, 60%)";
+        ctx.shadowColor = "hsl(210, 90%, 65%)";
+        ctx.fillStyle = "hsl(210, 90%, 65%)";
         ctx.globalAlpha = 0.9;
         ctx.beginPath();
         ctx.arc(mouse.current.x, mouse.current.y, dotSize, 0, Math.PI * 2);
@@ -198,7 +198,7 @@ const CustomCursor = () => {
 
         // Ring on hover
         if (isHovering) {
-          ctx.strokeStyle = "hsl(152, 100%, 60%)";
+          ctx.strokeStyle = "hsl(210, 90%, 65%)";
           ctx.lineWidth = 1.5;
           ctx.globalAlpha = 0.5;
           ctx.beginPath();
