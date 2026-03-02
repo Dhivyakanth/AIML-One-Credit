@@ -66,9 +66,9 @@ const Starfield = () => {
 
         // Outer glow
         const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, size * 3);
-        grad.addColorStop(0, `hsla(152, 80%, 70%, ${alpha * 0.8})`);
-        grad.addColorStop(0.4, `hsla(152, 60%, 60%, ${alpha * 0.3})`);
-        grad.addColorStop(1, `hsla(152, 60%, 60%, 0)`);
+        grad.addColorStop(0, `hsla(210, 80%, 75%, ${alpha * 0.8})`);
+        grad.addColorStop(0.4, `hsla(210, 60%, 65%, ${alpha * 0.3})`);
+        grad.addColorStop(1, `hsla(210, 60%, 65%, 0)`);
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(sx, sy, size * 3, 0, Math.PI * 2);

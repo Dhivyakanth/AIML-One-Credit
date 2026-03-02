@@ -15,7 +15,7 @@
     --popover: 0 0% 8%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 152 100% 60%;
+    --primary: 210 90% 60%;
     --primary-foreground: 0 0% 5%;
 
     --secondary: 0 0% 12%;
@@ -24,7 +24,7 @@
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 55%;
 
-    --accent: 152 100% 60%;
+    --accent: 210 90% 60%;
     --accent-foreground: 0 0% 5%;
 
     --destructive: 0 84.2% 60.2%;
@@ -32,24 +32,24 @@
 
     --border: 0 0% 16%;
     --input: 0 0% 16%;
-    --ring: 152 100% 60%;
+    --ring: 210 90% 60%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 7%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 152 100% 60%;
+    --sidebar-primary: 210 90% 60%;
     --sidebar-primary-foreground: 0 0% 5%;
     --sidebar-accent: 0 0% 12%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 16%;
-    --sidebar-ring: 152 100% 60%;
+    --sidebar-ring: 210 90% 60%;
 
     --font-heading: 'Space Grotesk', sans-serif;
     --font-body: 'Inter', sans-serif;
 
-    --glow-primary: 0 0 60px hsl(152 100% 60% / 0.15);
-    --gradient-hero: radial-gradient(ellipse at 50% 80%, hsl(152 100% 60% / 0.08) 0%, transparent 60%);
+    --glow-primary: 0 0 60px hsl(210 90% 60% / 0.15);
+    --gradient-hero: radial-gradient(ellipse at 50% 80%, hsl(210 90% 60% / 0.08) 0%, transparent 60%);
   }
 }
 
@@ -82,7 +82,7 @@
 
 /* Selection */
 ::selection {
-  background: hsl(152 100% 60% / 0.3);
+  background: hsl(210 90% 60% / 0.3);
   color: hsl(0 0% 95%);
 }
 
