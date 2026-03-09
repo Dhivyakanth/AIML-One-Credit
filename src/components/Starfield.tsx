@@ -22,8 +22,23 @@ const Starfield = () => {
       twinklePhase: number;
     }
 
+    interface ShootingStar {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      life: number;
+      size: number;
+      tail: { x: number; y: number }[];
+    }
+
     const stars: Star[] = [];
     const STAR_COUNT = 180;
+    const shootingStars: ShootingStar[] = [];
+    let lastShootingTime = 0;
+    const SHOOT_MIN = 5000;
+    const SHOOT_MAX = 10000;
+    let nextShootAt = Math.random() * (SHOOT_MAX - SHOOT_MIN) + SHOOT_MIN;
 
     const resize = () => {
       dpr = window.devicePixelRatio || 1;
@@ -48,12 +63,68 @@ const Starfield = () => {
       });
     }
 
-    const render = () => {
+    const render = (timestamp: number) => {
       const width = w();
       const height = h();
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
 
+      // Spawn shooting stars every 5-10s
+      if (timestamp - lastShootingTime > nextShootAt) {
+        lastShootingTime = timestamp;
+        nextShootAt = Math.random() * (SHOOT_MAX - SHOOT_MIN) + SHOOT_MIN;
+        const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.3;
+        const speed = 6 + Math.random() * 4;
+        shootingStars.push({
+          x: Math.random() * width * 0.7,
+          y: Math.random() * height * 0.3,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 1,
+          size: 2 + Math.random() * 1.5,
+          tail: [],
+        });
+      }
+
+      // Draw shooting stars
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const s = shootingStars[i];
+        s.tail.push({ x: s.x, y: s.y });
+        if (s.tail.length > 30) s.tail.shift();
+        s.x += s.vx;
+        s.y += s.vy;
+        s.life -= 0.012;
+
+        if (s.life <= 0 || s.x > width || s.y > height) {
+          shootingStars.splice(i, 1);
+          continue;
+        }
+
+        for (let j = 0; j < s.tail.length; j++) {
+          const t = s.tail[j];
+          const p = j / s.tail.length;
+          ctx.fillStyle = `hsla(210, 80%, 85%, ${p * s.life * 0.6})`;
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, s.size * p * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        const hg = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 3);
+        hg.addColorStop(0, `hsla(210, 90%, 95%, ${s.life})`);
+        hg.addColorStop(0.5, `hsla(210, 80%, 75%, ${s.life * 0.5})`);
+        hg.addColorStop(1, `hsla(210, 80%, 75%, 0)`);
+        ctx.fillStyle = hg;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size * 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `hsla(0, 0%, 100%, ${s.life})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Draw twinkling stars
       for (const star of stars) {
         star.twinklePhase += star.twinkleSpeed;
         const twinkle = 0.4 + 0.6 * ((Math.sin(star.twinklePhase) + 1) / 2);
@@ -64,7 +135,6 @@ const Starfield = () => {
         const sx = star.x * width;
         const sy = star.y * height;
 
-        // Outer glow
         const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, size * 3);
         grad.addColorStop(0, `hsla(210, 80%, 75%, ${alpha * 0.8})`);
         grad.addColorStop(0.4, `hsla(210, 60%, 65%, ${alpha * 0.3})`);
@@ -74,7 +144,6 @@ const Starfield = () => {
         ctx.arc(sx, sy, size * 3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Core dot
         ctx.fillStyle = `hsla(0, 0%, 100%, ${alpha})`;
         ctx.beginPath();
         ctx.arc(sx, sy, size * 0.6, 0, Math.PI * 2);
@@ -85,7 +154,7 @@ const Starfield = () => {
     };
 
     window.addEventListener("resize", resize);
-    render();
+    render(0);
 
     return () => {
       window.removeEventListener("resize", resize);

@@ -178,8 +178,8 @@ const CustomCursor = () => {
       // Draw cursor dot
       if (mouse.current.x > 0) {
         ctx.save();
-        const dotSize = isHovering ? 8 : 4;
-        const dotGlow = isHovering ? 20 : 10;
+        const dotSize = isHovering ? 10 : 6;
+        const dotGlow = isHovering ? 24 : 14;
         ctx.shadowBlur = dotGlow;
         ctx.shadowColor = "hsl(210, 90%, 65%)";
         ctx.fillStyle = "hsl(210, 90%, 65%)";
