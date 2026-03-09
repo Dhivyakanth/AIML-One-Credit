@@ -25,6 +25,23 @@ const Starfield = () => {
     const stars: Star[] = [];
     const STAR_COUNT = 180;
 
+    interface ShootingStar {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      life: number;
+      maxLife: number;
+      size: number;
+      tail: { x: number; y: number }[];
+    }
+
+    const shootingStars: ShootingStar[] = [];
+    let lastShootingTime = 0;
+    const SHOOTING_INTERVAL_MIN = 5000;
+    const SHOOTING_INTERVAL_MAX = 10000;
+    let nextShootingTime = Math.random() * (SHOOTING_INTERVAL_MAX - SHOOTING_INTERVAL_MIN) + SHOOTING_INTERVAL_MIN;
+
     const resize = () => {
       dpr = window.devicePixelRatio || 1;
       canvas.width = canvas.offsetWidth * dpr;
