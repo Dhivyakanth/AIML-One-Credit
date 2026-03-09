@@ -56,34 +56,52 @@ const Education = () => {
             <GraduationCap className="w-5 h-5 text-primary" />
             Education
           </motion.h3>
-          <motion.div
-            variants={itemVariants}
-            data-cursor-text="Education"
-            className="rounded-xl bg-card border border-border p-6 hover:border-primary/30 transition-colors duration-300"
-          >
-            <h4 className="font-heading font-semibold text-foreground">
-              K.S. Rangasamy College of Technology
-            </h4>
-            <p className="text-sm text-primary mt-1">B.E. in Computer Science and Engineering</p>
-            <div className="flex items-center justify-between mt-3">
-              <span className="text-sm text-muted-foreground">CGPA: 9.0 / 10</span>
-              <span className="text-xs text-muted-foreground font-mono">2024 – 2027</span>
-            </div>
-          </motion.div>
 
-          <motion.div
-            variants={itemVariants}
-            className="rounded-xl bg-card border border-border p-6 hover:border-primary/30 transition-colors duration-300"
-          >
-            <h4 className="font-heading font-semibold text-foreground">
-              K.S.R Matric Higher Secondary School
-            </h4>
-            <p className="text-sm text-primary mt-1">Higher Secondary Education</p>
-            <div className="flex items-center justify-between mt-3">
-              <span className="text-sm text-muted-foreground">Percentage: 93%</span>
-              <span className="text-xs text-muted-foreground font-mono">2021 – 2024</span>
-            </div>
-          </motion.div>
+          {[
+            {
+              school: "K.S. Rangasamy College of Technology",
+              degree: "B.E. in Computer Science and Engineering",
+              score: "CGPA: 9.0 / 10",
+              year: "2024 – 2027",
+            },
+            {
+              school: "K.S.R Matric Higher Secondary School",
+              degree: "Higher Secondary Education",
+              score: "Percentage: 93%",
+              year: "2021 – 2024",
+            },
+          ].map((edu) => (
+            <motion.div
+              key={edu.school}
+              variants={itemVariants}
+              whileHover={{
+                y: -4,
+                transition: { duration: 0.3, ease: "easeOut" },
+              }}
+              data-cursor-text="Education"
+              className="group rounded-xl bg-card border border-border p-6 transition-all duration-500 hover:border-primary/50 hover:shadow-[0_0_40px_hsl(var(--primary)/0.08),0_6px_24px_hsl(var(--primary)/0.05)] hover:bg-card/95"
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <h4 className="font-heading font-semibold text-foreground group-hover:text-primary transition-colors duration-300">
+                    {edu.school}
+                  </h4>
+                  <p className="text-sm text-primary mt-1">{edu.degree}</p>
+                </div>
+                <motion.div
+                  className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  whileHover={{ rotate: 10 }}
+                >
+                  <GraduationCap className="w-4 h-4 text-primary" />
+                </motion.div>
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-sm text-muted-foreground">{edu.score}</span>
+                <span className="text-xs text-muted-foreground font-mono">{edu.year}</span>
+              </div>
+              <div className="mt-4 h-px w-0 group-hover:w-full bg-gradient-to-r from-primary/40 via-primary/20 to-transparent transition-all duration-700" />
+            </motion.div>
+          ))}
         </div>
 
         {/* Certifications + Achievements */}
@@ -112,9 +130,10 @@ const Education = () => {
                 <motion.li
                   key={cert}
                   variants={listItemVariants}
-                  className="flex items-start gap-3 text-sm text-muted-foreground"
+                  whileHover={{ x: 6, transition: { duration: 0.2 } }}
+                  className="flex items-start gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 cursor-default group"
                 >
-                  <span className="mt-1 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0 group-hover:shadow-[0_0_8px_hsl(var(--primary)/0.5)] transition-shadow duration-300" />
                   {cert}
                 </motion.li>
               ))}
@@ -144,9 +163,10 @@ const Education = () => {
                 <motion.li
                   key={ach}
                   variants={listItemVariants}
-                  className="flex items-start gap-3 text-sm text-muted-foreground"
+                  whileHover={{ x: 6, transition: { duration: 0.2 } }}
+                  className="flex items-start gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 cursor-default group"
                 >
-                  <span className="mt-1 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0 group-hover:shadow-[0_0_8px_hsl(var(--primary)/0.5)] transition-shadow duration-300" />
                   {ach}
                 </motion.li>
               ))}

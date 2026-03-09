@@ -53,7 +53,6 @@ const skillPillVariants = {
 const Skills = () => {
   return (
     <section id="skills" className="py-24 px-6 md:px-16 lg:px-24 relative overflow-hidden">
-      {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.04] blur-[100px] bg-primary pointer-events-none" />
 
       <div className="flex flex-col lg:flex-row gap-16">
@@ -75,7 +74,6 @@ const Skills = () => {
             <span className="text-primary font-mono">&lt;/p&gt;</span>
           </p>
 
-          {/* Stats */}
           <div className="grid grid-cols-3 gap-6">
             {[
               { value: "9.0", label: "CGPA" },
@@ -96,7 +94,6 @@ const Skills = () => {
             ))}
           </div>
 
-          {/* Code divider */}
           <div className="flex items-center gap-3 mt-8">
             <span className="text-primary font-mono text-sm">&lt;/</span>
             <div className="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent" />
@@ -104,7 +101,7 @@ const Skills = () => {
           </div>
         </motion.div>
 
-        {/* Right skill cards - staggered container */}
+        {/* Right skill cards */}
         <motion.div
           className="lg:w-2/3 space-y-6"
           variants={containerVariants}
@@ -116,19 +113,27 @@ const Skills = () => {
             <motion.div
               key={cat.title}
               variants={cardVariants}
+              whileHover={{
+                y: -6,
+                transition: { duration: 0.3, ease: "easeOut" },
+              }}
               data-cursor-text="Explore"
-              className="group rounded-xl bg-card/80 backdrop-blur-sm border border-border p-6 hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_40px_hsl(var(--primary)/0.06)]"
+              className="group rounded-xl bg-card/80 backdrop-blur-sm border border-border p-6 transition-all duration-500 hover:border-primary/50 hover:shadow-[0_0_50px_hsl(var(--primary)/0.1),0_8px_32px_hsl(var(--primary)/0.06)] hover:bg-card/95"
             >
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <span className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-mono text-sm font-bold">
+                  <motion.span
+                    whileHover={{ rotate: 12, scale: 1.15 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-mono text-sm font-bold group-hover:bg-primary/20 group-hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)] transition-all duration-300"
+                  >
                     {cat.icon}
-                  </span>
-                  <h3 className="font-heading text-base font-semibold text-foreground tracking-wide">
+                  </motion.span>
+                  <h3 className="font-heading text-base font-semibold text-foreground tracking-wide group-hover:text-primary transition-colors duration-300">
                     {cat.title}
                   </h3>
                 </div>
-                <span className="text-xs text-muted-foreground font-mono">
+                <span className="text-xs text-muted-foreground font-mono group-hover:text-primary/60 transition-colors duration-300">
                   {String(i + 1).padStart(2, "0")}
                 </span>
               </div>
@@ -145,13 +150,20 @@ const Skills = () => {
                     key={skill}
                     custom={j}
                     variants={skillPillVariants}
-                    whileHover={{ scale: 1.08, y: -2 }}
-                    className="px-4 py-2 rounded-full bg-secondary/80 text-secondary-foreground text-sm font-medium border border-border/50 hover:border-primary/50 hover:bg-primary/10 hover:text-primary transition-colors duration-300 cursor-default"
+                    whileHover={{
+                      scale: 1.1,
+                      y: -3,
+                      transition: { type: "spring", stiffness: 400, damping: 15 },
+                    }}
+                    className="px-4 py-2 rounded-full bg-secondary/80 text-secondary-foreground text-sm font-medium border border-border/50 hover:border-primary/60 hover:bg-primary/15 hover:text-primary hover:shadow-[0_0_15px_hsl(var(--primary)/0.12)] transition-colors duration-300 cursor-default"
                   >
                     {skill}
                   </motion.span>
                 ))}
               </motion.div>
+
+              {/* Hover glow line at bottom */}
+              <div className="mt-5 h-px w-0 group-hover:w-full bg-gradient-to-r from-primary/50 via-primary/30 to-transparent transition-all duration-700" />
             </motion.div>
           ))}
         </motion.div>

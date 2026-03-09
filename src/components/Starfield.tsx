@@ -11,9 +11,11 @@ const Starfield = () => {
 
     let animId: number;
     let dpr = window.devicePixelRatio || 1;
+    let scrollY = 0;
 
     interface Star {
       x: number; y: number; z: number;
+      baseY: number;
       size: number; brightness: number;
       twinkleSpeed: number; twinklePhase: number;
     }
@@ -22,8 +24,7 @@ const Starfield = () => {
       x: number; y: number;
       vx: number; vy: number;
       life: number; size: number;
-      speed: number;
-      tail: { x: number; y: number; alpha: number }[];
+      tail: { x: number; y: number }[];
     }
 
     const stars: Star[] = [];
@@ -34,7 +35,6 @@ const Starfield = () => {
     const SHOOT_MAX = 10000;
     let nextShootAt = Math.random() * (SHOOT_MAX - SHOOT_MIN) + SHOOT_MIN;
 
-    // Pre-rendered nebula canvas (static, drawn once)
     let nebulaCanvas: HTMLCanvasElement | null = null;
 
     const resize = () => {
@@ -57,7 +57,6 @@ const Starfield = () => {
       const nctx = nebulaCanvas.getContext("2d");
       if (!nctx) return;
 
-      // Large soft nebula clouds
       const blobs = [
         { x: width * 0.3, y: height * 0.25, rx: width * 0.35, ry: height * 0.25, hue: 220, sat: 60, light: 20, alpha: 0.04 },
         { x: width * 0.7, y: height * 0.6, rx: width * 0.3, ry: height * 0.2, hue: 240, sat: 50, light: 15, alpha: 0.035 },
@@ -77,7 +76,6 @@ const Starfield = () => {
         nctx.fill();
       }
 
-      // Milky way band — diagonal streak
       nctx.save();
       nctx.translate(width * 0.5, height * 0.5);
       nctx.rotate(-0.4);
@@ -93,8 +91,9 @@ const Starfield = () => {
     resize();
 
     for (let i = 0; i < STAR_COUNT; i++) {
+      const y = Math.random();
       stars.push({
-        x: Math.random(), y: Math.random(), z: Math.random(),
+        x: Math.random(), y, baseY: y, z: Math.random(),
         size: Math.random() * 1.8 + 0.3,
         brightness: Math.random() * 0.6 + 0.2,
         twinkleSpeed: Math.random() * 0.03 + 0.008,
@@ -102,18 +101,22 @@ const Starfield = () => {
       });
     }
 
+    const handleScroll = () => {
+      scrollY = window.scrollY;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
     const render = (timestamp: number) => {
       const width = w();
       const height = h();
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
 
-      // Draw nebula overlay
       if (nebulaCanvas) {
         ctx.drawImage(nebulaCanvas, 0, 0);
       }
 
-      // Spawn shooting stars
+      // Shooting stars
       if (timestamp - lastShootTime > nextShootAt) {
         lastShootTime = timestamp;
         nextShootAt = Math.random() * (SHOOT_MAX - SHOOT_MIN) + SHOOT_MIN;
@@ -125,19 +128,16 @@ const Starfield = () => {
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           life: 1, size: 1.5 + Math.random(),
-          speed,
           tail: [],
         });
       }
 
-      // Draw shooting stars
       for (let i = shootingStars.length - 1; i >= 0; i--) {
         const s = shootingStars[i];
-        s.tail.push({ x: s.x, y: s.y, alpha: s.life });
+        s.tail.push({ x: s.x, y: s.y });
         if (s.tail.length > 50) s.tail.shift();
         s.x += s.vx;
         s.y += s.vy;
-        // Accelerate slightly for realism
         s.vx *= 1.005;
         s.vy *= 1.005;
         s.life -= 0.008;
@@ -147,18 +147,14 @@ const Starfield = () => {
           continue;
         }
 
-        // Draw tail as a continuous tapered line
         if (s.tail.length > 1) {
           ctx.save();
           for (let j = 1; j < s.tail.length; j++) {
             const prev = s.tail[j - 1];
             const curr = s.tail[j];
             const progress = j / s.tail.length;
-            const lineWidth = s.size * progress * 1.8;
-            const alpha = progress * progress * s.life * 0.7;
-
-            ctx.strokeStyle = `hsla(210, 70%, 85%, ${alpha})`;
-            ctx.lineWidth = lineWidth;
+            ctx.strokeStyle = `hsla(210, 70%, 85%, ${progress * progress * s.life * 0.7})`;
+            ctx.lineWidth = s.size * progress * 1.8;
             ctx.lineCap = "round";
             ctx.beginPath();
             ctx.moveTo(prev.x, prev.y);
@@ -168,7 +164,6 @@ const Starfield = () => {
           ctx.restore();
         }
 
-        // Bright head with glow
         ctx.save();
         ctx.shadowBlur = 15 * s.life;
         ctx.shadowColor = `hsla(210, 90%, 90%, ${s.life * 0.8})`;
@@ -176,8 +171,6 @@ const Starfield = () => {
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.size * 1.2, 0, Math.PI * 2);
         ctx.fill();
-
-        // Outer glow halo
         ctx.shadowBlur = 0;
         const hGrad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 6);
         hGrad.addColorStop(0, `hsla(210, 90%, 95%, ${s.life * 0.4})`);
@@ -190,15 +183,19 @@ const Starfield = () => {
         ctx.restore();
       }
 
-      // Draw twinkling stars
+      // Parallax stars — z determines scroll speed
+      const scrollFactor = scrollY / height;
       for (const star of stars) {
         star.twinklePhase += star.twinkleSpeed;
         const twinkle = 0.4 + 0.6 * ((Math.sin(star.twinklePhase) + 1) / 2);
         const alpha = star.brightness * twinkle;
         const depth = 0.3 + star.z * 0.7;
         const size = star.size * depth;
+
+        // Parallax: deeper stars (high z) move faster
+        const parallaxOffset = scrollFactor * star.z * 0.15;
+        const sy = ((star.baseY - parallaxOffset) % 1 + 1) % 1 * height;
         const sx = star.x * width;
-        const sy = star.y * height;
 
         const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, size * 3);
         grad.addColorStop(0, `hsla(210, 80%, 75%, ${alpha * 0.8})`);
@@ -223,6 +220,7 @@ const Starfield = () => {
 
     return () => {
       window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", handleScroll);
       cancelAnimationFrame(animId);
     };
   }, []);
