@@ -58,11 +58,11 @@ const Starfield = () => {
       if (!nctx) return;
 
       const blobs = [
-        { x: width * 0.3, y: height * 0.25, rx: width * 0.35, ry: height * 0.25, hue: 220, sat: 60, light: 20, alpha: 0.04 },
-        { x: width * 0.7, y: height * 0.6, rx: width * 0.3, ry: height * 0.2, hue: 240, sat: 50, light: 15, alpha: 0.035 },
-        { x: width * 0.5, y: height * 0.5, rx: width * 0.5, ry: height * 0.15, hue: 210, sat: 70, light: 25, alpha: 0.025 },
-        { x: width * 0.15, y: height * 0.7, rx: width * 0.2, ry: height * 0.2, hue: 260, sat: 40, light: 18, alpha: 0.03 },
-        { x: width * 0.85, y: height * 0.3, rx: width * 0.18, ry: height * 0.18, hue: 200, sat: 55, light: 22, alpha: 0.025 },
+        { x: width * 0.3, y: height * 0.25, rx: width * 0.35, ry: height * 0.25, hue: 150, sat: 60, light: 15, alpha: 0.04 },
+        { x: width * 0.7, y: height * 0.6, rx: width * 0.3, ry: height * 0.2, hue: 140, sat: 50, light: 12, alpha: 0.035 },
+        { x: width * 0.5, y: height * 0.5, rx: width * 0.5, ry: height * 0.15, hue: 152, sat: 70, light: 18, alpha: 0.025 },
+        { x: width * 0.15, y: height * 0.7, rx: width * 0.2, ry: height * 0.2, hue: 160, sat: 40, light: 14, alpha: 0.03 },
+        { x: width * 0.85, y: height * 0.3, rx: width * 0.18, ry: height * 0.18, hue: 145, sat: 55, light: 16, alpha: 0.025 },
       ];
 
       for (const b of blobs) {
@@ -80,9 +80,9 @@ const Starfield = () => {
       nctx.translate(width * 0.5, height * 0.5);
       nctx.rotate(-0.4);
       const milky = nctx.createRadialGradient(0, 0, 0, 0, 0, width * 0.6);
-      milky.addColorStop(0, "hsla(215, 60%, 25%, 0.03)");
-      milky.addColorStop(0.3, "hsla(220, 50%, 20%, 0.02)");
-      milky.addColorStop(1, "hsla(220, 50%, 20%, 0)");
+      milky.addColorStop(0, "hsla(150, 60%, 20%, 0.03)");
+      milky.addColorStop(0.3, "hsla(145, 50%, 15%, 0.02)");
+      milky.addColorStop(1, "hsla(145, 50%, 15%, 0)");
       nctx.fillStyle = milky;
       nctx.fillRect(-width * 0.6, -height * 0.08, width * 1.2, height * 0.16);
       nctx.restore();
@@ -153,7 +153,7 @@ const Starfield = () => {
             const prev = s.tail[j - 1];
             const curr = s.tail[j];
             const progress = j / s.tail.length;
-            ctx.strokeStyle = `hsla(210, 70%, 85%, ${progress * progress * s.life * 0.7})`;
+            ctx.strokeStyle = `hsla(152, 80%, 85%, ${progress * progress * s.life * 0.7})`;
             ctx.lineWidth = s.size * progress * 1.8;
             ctx.lineCap = "round";
             ctx.beginPath();
@@ -166,16 +166,16 @@ const Starfield = () => {
 
         ctx.save();
         ctx.shadowBlur = 15 * s.life;
-        ctx.shadowColor = `hsla(210, 90%, 90%, ${s.life * 0.8})`;
+        ctx.shadowColor = `hsla(152, 100%, 80%, ${s.life * 0.8})`;
         ctx.fillStyle = `hsla(0, 0%, 100%, ${s.life})`;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.size * 1.2, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
         const hGrad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 6);
-        hGrad.addColorStop(0, `hsla(210, 90%, 95%, ${s.life * 0.4})`);
-        hGrad.addColorStop(0.3, `hsla(210, 80%, 75%, ${s.life * 0.15})`);
-        hGrad.addColorStop(1, "hsla(210, 80%, 75%, 0)");
+        hGrad.addColorStop(0, `hsla(152, 100%, 90%, ${s.life * 0.4})`);
+        hGrad.addColorStop(0.3, `hsla(152, 80%, 65%, ${s.life * 0.15})`);
+        hGrad.addColorStop(1, "hsla(152, 80%, 65%, 0)");
         ctx.fillStyle = hGrad;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.size * 6, 0, Math.PI * 2);
@@ -183,7 +183,7 @@ const Starfield = () => {
         ctx.restore();
       }
 
-      // Parallax stars — z determines scroll speed
+      // Parallax stars
       const scrollFactor = scrollY / height;
       for (const star of stars) {
         star.twinklePhase += star.twinkleSpeed;
@@ -192,15 +192,14 @@ const Starfield = () => {
         const depth = 0.3 + star.z * 0.7;
         const size = star.size * depth;
 
-        // Parallax: deeper stars (high z) move faster
         const parallaxOffset = scrollFactor * star.z * 0.15;
         const sy = ((star.baseY - parallaxOffset) % 1 + 1) % 1 * height;
         const sx = star.x * width;
 
         const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, size * 3);
-        grad.addColorStop(0, `hsla(210, 80%, 75%, ${alpha * 0.8})`);
-        grad.addColorStop(0.4, `hsla(210, 60%, 65%, ${alpha * 0.3})`);
-        grad.addColorStop(1, "hsla(210, 60%, 65%, 0)");
+        grad.addColorStop(0, `hsla(152, 80%, 75%, ${alpha * 0.8})`);
+        grad.addColorStop(0.4, `hsla(152, 60%, 55%, ${alpha * 0.3})`);
+        grad.addColorStop(1, "hsla(152, 60%, 55%, 0)");
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(sx, sy, size * 3, 0, Math.PI * 2);

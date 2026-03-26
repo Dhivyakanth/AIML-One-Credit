@@ -17,11 +17,11 @@ interface Particle {
 }
 
 const STAR_COLORS = [
-  "hsl(210, 90%, 65%)",    // primary blue
-  "hsl(210, 80%, 80%)",    // lighter blue
-  "hsl(220, 100%, 60%)",   // deeper blue
-  "hsl(200, 90%, 65%)",    // sky blue
-  "hsl(195, 70%, 75%)",    // cyan accent
+  "hsl(152, 100%, 60%)",   // primary green
+  "hsl(152, 80%, 75%)",    // lighter green
+  "hsl(140, 100%, 55%)",   // deeper green
+  "hsl(160, 90%, 60%)",    // teal green
+  "hsl(145, 70%, 70%)",    // soft green
   "hsl(0, 0%, 95%)",       // white sparkle
 ];
 
@@ -42,7 +42,7 @@ const CustomCursor = () => {
   const glowIntensity = 12;
   const motionSensitivity = 1.2;
   const maxParticles = 120;
-  const emitRate = 3; // ms between emissions
+  const emitRate = 3;
 
   const createParticle = useCallback((x: number, y: number, speed: number): Particle => {
     const depth = Math.random() * 0.6 + 0.4;
@@ -118,7 +118,6 @@ const CustomCursor = () => {
       const dy = mouse.current.y - prevMouse.current.y;
       const speed = Math.sqrt(dx * dx + dy * dy) * motionSensitivity;
 
-      // Emit particles based on movement
       const emitCount = Math.min(Math.max(1, Math.floor(speed * 0.3)), 5);
       if (now - lastEmit.current > emitRate && mouse.current.x > 0) {
         for (let i = 0; i < emitCount; i++) {
@@ -131,12 +130,11 @@ const CustomCursor = () => {
 
       prevMouse.current = { ...mouse.current };
 
-      // Update & draw particles
       for (let i = particles.current.length - 1; i >= 0; i--) {
         const p = particles.current[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.01; // subtle gravity
+        p.vy += 0.01;
         p.vx *= 0.99;
         p.vy *= 0.99;
         p.life -= fadeSpeed;
@@ -156,16 +154,13 @@ const CustomCursor = () => {
         ctx.save();
         ctx.globalAlpha = alpha;
 
-        // Glow
         ctx.shadowBlur = glowIntensity * lifeRatio;
         ctx.shadowColor = p.color;
 
-        // Draw star shape
         ctx.fillStyle = p.color;
         drawStar(ctx, p.x, p.y, currentSize, p.rotation);
         ctx.fill();
 
-        // Extra bright core
         ctx.shadowBlur = 0;
         ctx.globalAlpha = alpha * 0.8;
         ctx.fillStyle = "hsl(0, 0%, 100%)";
@@ -181,8 +176,8 @@ const CustomCursor = () => {
         const dotSize = isHovering ? 10 : 6;
         const dotGlow = isHovering ? 24 : 14;
         ctx.shadowBlur = dotGlow;
-        ctx.shadowColor = "hsl(210, 90%, 65%)";
-        ctx.fillStyle = "hsl(210, 90%, 65%)";
+        ctx.shadowColor = "hsl(152, 100%, 55%)";
+        ctx.fillStyle = "hsl(152, 100%, 55%)";
         ctx.globalAlpha = 0.9;
         ctx.beginPath();
         ctx.arc(mouse.current.x, mouse.current.y, dotSize, 0, Math.PI * 2);
@@ -198,7 +193,7 @@ const CustomCursor = () => {
 
         // Ring on hover
         if (isHovering) {
-          ctx.strokeStyle = "hsl(210, 90%, 65%)";
+          ctx.strokeStyle = "hsl(152, 100%, 55%)";
           ctx.lineWidth = 1.5;
           ctx.globalAlpha = 0.5;
           ctx.beginPath();
