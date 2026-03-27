@@ -44,11 +44,7 @@ const ShuffleSection = ({
 
   // Hero — no effect
   if (index === 0) {
-    return (
-      <section id={id} ref={ref} className="min-h-screen relative">
-        {children}
-      </section>
-    );
+    return <>{children}</>;
   }
 
   // For the LAST section: only fade/flip in, stay fully visible (no exit fade)
