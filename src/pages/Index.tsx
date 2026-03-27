@@ -9,6 +9,7 @@ import Contact from "@/components/Contact";
 import BackToTop from "@/components/BackToTop";
 import CustomCursor from "@/components/CustomCursor";
 import Starfield from "@/components/Starfield";
+import SectionVideoBackground from "@/components/SectionVideoBackground";
 
 const sections = [
   { id: "hero", Component: Hero },
@@ -112,15 +113,17 @@ const ShuffleSection = ({
 const Index = () => {
   return (
     <div className="bg-background relative overflow-x-hidden">
+      <SectionVideoBackground />
+
       {/* Global starfield */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-[1] pointer-events-none">
         <Starfield />
       </div>
 
       <CustomCursor />
 
       {/* Top gradient overlay */}
-      <div className="fixed top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent z-[1] pointer-events-none" />
+      <div className="fixed top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent z-[2] pointer-events-none" />
 
       <div className="relative z-10">
         {sections.map((s, i) => (
