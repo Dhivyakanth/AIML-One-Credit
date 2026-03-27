@@ -1,10 +1,10 @@
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 
 type VideoSection = "about" | "skills" | "experience" | "projects" | "education" | "contact";
 
 type VideoTheme = {
-  src: string;
+  src?: string;
   overlay: string;
   fallbackGradient: string;
 };
@@ -16,7 +16,6 @@ const VIDEO_THEMES: Record<VideoSection, VideoTheme> = {
     fallbackGradient: "bg-[radial-gradient(circle_at_20%_20%,hsl(160_100%_45%/0.14),transparent_44%),linear-gradient(135deg,hsl(220_42%_6%),hsl(228_40%_3%))]",
   },
   skills: {
-    src: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smart-phone-with-an-abstract-visualization-19700-large.mp4",
     overlay: "bg-[radial-gradient(circle_at_80%_22%,hsl(195_100%_50%/0.16),transparent_40%),linear-gradient(to_bottom,hsl(215_45%_6%/0.68),hsl(220_35%_3%/0.78))]",
     fallbackGradient: "bg-[radial-gradient(circle_at_80%_22%,hsl(195_100%_50%/0.16),transparent_42%),linear-gradient(145deg,hsl(215_45%_7%),hsl(220_38%_3%))]",
   },
@@ -51,10 +50,14 @@ const SectionVideoBackground = ({
   sectionIds = ["about", "skills", "experience", "projects", "education", "contact"],
   defaultSection = "about",
 }: SectionVideoBackgroundProps) => {
-  const prefersReducedMotion = useReducedMotion();
   const [activeSection, setActiveSection] = useState<VideoSection>(defaultSection);
+  const [hasVideoError, setHasVideoError] = useState(false);
 
   const activeTheme = useMemo(() => VIDEO_THEMES[activeSection] ?? VIDEO_THEMES.about, [activeSection]);
+
+  useEffect(() => {
+    setHasVideoError(false);
+  }, [activeTheme.src, activeSection]);
 
   useEffect(() => {
     if (typeof window === "undefined" || sectionIds.length === 0) {
@@ -115,7 +118,7 @@ const SectionVideoBackground = ({
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
       <div className={`absolute inset-0 ${activeTheme.fallbackGradient}`} />
 
-      {!prefersReducedMotion && (
+      {!hasVideoError && !!activeTheme.src && (
         <AnimatePresence mode="wait">
           <motion.video
             key={activeTheme.src}
@@ -123,10 +126,11 @@ const SectionVideoBackground = ({
             muted
             loop
             playsInline
-            preload="metadata"
-            className="absolute inset-0 h-full w-full object-cover opacity-[0.32]"
+            preload="auto"
+            onError={() => setHasVideoError(true)}
+            className="absolute inset-0 h-full w-full object-cover opacity-[0.34]"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.32 }}
+            animate={{ opacity: 0.34 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
@@ -139,7 +143,7 @@ const SectionVideoBackground = ({
         key={activeSection}
         className={`absolute inset-0 ${activeTheme.overlay}`}
         initial={{ opacity: 0.5 }}
-        animate={{ opacity: 1 }}
+        animate={{ opacity: hasVideoError ? 1 : 0.88 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       />
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,hsl(0_0%_1%/0.12),hsl(0_0%_2%/0.6))]" />

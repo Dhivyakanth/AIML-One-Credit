@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 
 interface InlineVideoCardProps {
@@ -26,7 +26,7 @@ const InlineVideoCard = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const prefersReducedMotion = useReducedMotion();
+  const [hasVideoError, setHasVideoError] = useState(false);
 
   const aspectClass =
     aspectRatio === "video"
@@ -39,7 +39,20 @@ const InlineVideoCard = ({
     const video = videoRef.current;
     if (!video) return;
     video.playbackRate = 0.75; // Slightly slowed for cinematic feel
+    const tryPlay = async () => {
+      try {
+        await video.play();
+      } catch {
+        // Browser autoplay restrictions can block play; muted+playsInline usually resolves this.
+      }
+    };
+    tryPlay();
   }, [isLoaded]);
+
+  useEffect(() => {
+    setHasVideoError(false);
+    setIsLoaded(false);
+  }, [src]);
 
   return (
     <motion.div
@@ -117,7 +130,7 @@ const InlineVideoCard = ({
         )}
 
         {/* Video */}
-        {!prefersReducedMotion && (
+        {!hasVideoError ? (
           <video
             ref={videoRef}
             src={src}
@@ -125,10 +138,13 @@ const InlineVideoCard = ({
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
             onLoadedData={() => setIsLoaded(true)}
+            onError={() => setHasVideoError(true)}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background/60 to-background" />
         )}
 
         {/* Gradient overlays */}

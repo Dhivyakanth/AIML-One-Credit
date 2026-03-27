@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { GraduationCap, Award, BookOpen } from "lucide-react";
 import GlowCard from "./GlowCard";
 import TextReveal from "./TextReveal";
-import InlineVideoCard from "./InlineVideoCard";
+import InlineImageCard from "./InlineImageCard";
 
 const containerVariants = {
   hidden: {},
@@ -54,18 +54,20 @@ const Education = () => {
           transition={{ delay: 0.3, duration: 0.8 }}
           className="grid grid-cols-2 gap-4 mb-12"
         >
-          <InlineVideoCard
-            src="https://assets.mixkit.co/videos/preview/mixkit-students-in-a-computer-lab-classroom-4-large.mp4"
+          <InlineImageCard
+            src="https://ksrct.ac.in/assets/images/aboutus/aboutksrctimg.jpeg"
+            alt="K.S.Rangasamy College of Technology campus"
             badge="Campus"
-            label="K.S. Rangasamy College"
+            label="K.S.Rangasamy College of Technology"
             aspectRatio="video"
             showStatus
             delay={0.1}
           />
-          <InlineVideoCard
-            src="https://assets.mixkit.co/videos/preview/mixkit-man-studying-at-home-with-laptop-and-books-3993-large.mp4"
+          <InlineImageCard
+            src="/ksr-matric-school.jpg"
+            alt="K.S.R Matric Higher Secondary School campus"
             badge="Learning"
-            label="Continuous Growth"
+            label="Academic Excellence"
             aspectRatio="video"
             delay={0.25}
           />

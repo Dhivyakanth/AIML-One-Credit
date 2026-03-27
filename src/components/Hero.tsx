@@ -1,6 +1,5 @@
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import type { WheelEvent } from "react";
 import profileImg from "@/assets/profile.jpg";
 import { Mail, Phone, MapPin, Download, ChevronDown } from "lucide-react";
 import MagneticButton from "./MagneticButton";
@@ -12,8 +11,6 @@ const navItems = ["about", "skills", "experience", "projects", "education", "con
 
 const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const aboutScrollLockRef = useRef(false);
-  const aboutScrollLockTimerRef = useRef<number | null>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
@@ -77,34 +74,6 @@ const Hero = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (aboutScrollLockTimerRef.current) {
-        window.clearTimeout(aboutScrollLockTimerRef.current);
-      }
-    };
-  }, []);
-
-  const handleAboutWheel = (e: WheelEvent<HTMLElement>) => {
-    // Force first downward wheel action on About to advance to Skills.
-    if (e.deltaY <= 0 || aboutScrollLockRef.current) {
-      return;
-    }
-
-    const skills = document.getElementById("skills");
-    if (!skills) {
-      return;
-    }
-
-    e.preventDefault();
-    aboutScrollLockRef.current = true;
-    skills.scrollIntoView({ behavior: "smooth", block: "start" });
-
-    aboutScrollLockTimerRef.current = window.setTimeout(() => {
-      aboutScrollLockRef.current = false;
-    }, 800);
-  };
-
   // Character animation variants
   const titleChars = "I'M A".split("");
   const roleChars = "FULL STACK".split("");
@@ -142,8 +111,7 @@ const Hero = () => {
     <section
       ref={sectionRef}
       id="about"
-      onWheel={handleAboutWheel}
-      className="relative min-h-screen flex flex-col justify-center overflow-hidden"
+      className="relative min-h-[125svh] md:min-h-[120svh] flex flex-col justify-center overflow-hidden"
     >
       {/* Background Video & Gradient overlay */}
       <motion.div className="absolute inset-0 w-full h-full overflow-hidden" style={{ opacity: bgOpacity }}>
@@ -428,7 +396,7 @@ const Hero = () => {
         >
           <MagneticButton
             as="a"
-            href="/Dhivyakanth_Resume.pdf"
+            href="/1Dhivyakanth_Final_Resume.pdf"
             download
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:shadow-[0_0_40px_hsl(var(--primary)/0.4)] transition-all duration-300 group"
           >
@@ -437,9 +405,9 @@ const Hero = () => {
           </MagneticButton>
 
           {[
-            { label: "LinkedIn", href: "https://linkedin.com" },
-            { label: "GitHub", href: "https://github.com" },
-            { label: "LeetCode", href: "https://leetcode.com" },
+            { label: "LinkedIn", href: "https://www.linkedin.com/in/dhivyakanth-p-409a30291/" },
+            { label: "GitHub", href: "https://github.com/Dhivyakanth" },
+            { label: "LeetCode", href: "https://leetcode.com/u/4CSqeEzFyk/" },
           ].map((link, i) => (
             <MagneticButton
               key={link.label}

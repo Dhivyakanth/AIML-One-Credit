@@ -5,7 +5,6 @@ import { useToast } from "@/hooks/use-toast";
 import GlowCard from "./GlowCard";
 import MagneticButton from "./MagneticButton";
 import TextReveal from "./TextReveal";
-import InlineVideoCard from "./InlineVideoCard";
 
 const containerVariants = {
   hidden: {},
@@ -256,17 +255,6 @@ const Contact = () => {
             ))}
           </motion.div>
 
-          {/* Contact section video accent */}
-          <motion.div variants={itemVariants} className="mt-4">
-            <InlineVideoCard
-              src="https://assets.mixkit.co/videos/preview/mixkit-network-of-connections-over-a-city-1744-large.mp4"
-              badge="Connect"
-              label="Let's Build Something Great"
-              aspectRatio="video"
-              showStatus
-              delay={0.2}
-            />
-          </motion.div>
         </motion.div>
       </motion.div>
 

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import GlowCard from "./GlowCard";
 import TextReveal from "./TextReveal";
-import InlineVideoCard from "./InlineVideoCard";
+import InlineImageCard from "./InlineImageCard";
 
 const experiences = [
   {
@@ -89,24 +89,15 @@ const Experience = () => {
             <span className="text-primary font-mono text-sm">&gt;</span>
           </div>
 
-          {/* Experience inline video */}
           <div className="mt-8">
-            <InlineVideoCard
-              src="https://assets.mixkit.co/videos/preview/mixkit-two-people-shaking-hands-in-a-deal-4942-large.mp4"
-              badge="Internship"
-              label="Professional Growth"
+            <InlineImageCard
+              src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1400&q=80"
+              alt="AI generated portrait with full stack analytics"
+              badge="AI"
+              label="AI Work Experience"
               aspectRatio="video"
-              delay={0.3}
+              delay={0.35}
               showStatus
-            />
-          </div>
-          <div className="mt-4">
-            <InlineVideoCard
-              src="https://assets.mixkit.co/videos/preview/mixkit-developer-working-on-a-laptop-at-night-1426-large.mp4"
-              badge="Work"
-              label="Real-World Projects"
-              aspectRatio="video"
-              delay={0.5}
             />
           </div>
         </motion.div>
