@@ -4,7 +4,7 @@ import type { WheelEvent } from "react";
 import profileImg from "@/assets/profile.jpg";
 import { Mail, Phone, MapPin, Download, ChevronDown } from "lucide-react";
 import MagneticButton from "./MagneticButton";
-import InlineVideoCard from "./InlineVideoCard";
+
 
 const roles = ["Full Stack Developer", "AI & ML Engineer", "Problem Solver", "Tech Enthusiast"];
 
@@ -145,9 +145,25 @@ const Hero = () => {
       onWheel={handleAboutWheel}
       className="relative min-h-screen flex flex-col justify-center overflow-hidden"
     >
-      {/* Gradient overlay */}
-      <motion.div className="absolute inset-0" style={{ opacity: bgOpacity }}>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.08)_0%,transparent_60%)]" />
+      {/* Background Video & Gradient overlay */}
+      <motion.div className="absolute inset-0 w-full h-full overflow-hidden" style={{ opacity: bgOpacity }}>
+        {/* Background video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-screen"
+        >
+          <source
+            src="https://assets.mixkit.co/videos/preview/mixkit-particles-floating-against-a-dark-background-154-large.mp4"
+            type="video/mp4"
+          />
+        </video>
+        
+        {/* Gradients to blend the video smoothly */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background z-10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.08)_0%,transparent_60%)] z-10" />
       </motion.div>
 
       {/* Ambient glow backgrounds */}
@@ -439,45 +455,9 @@ const Hero = () => {
         </motion.div>
       </div>
 
-      {/* Floating video cards — decorative tech accent */}
-      <motion.div
-        initial={{ opacity: 0, x: 60 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1.4, duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="absolute right-6 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-4 z-[4] w-52"
-      >
-        <InlineVideoCard
-          src="https://assets.mixkit.co/videos/preview/mixkit-young-woman-typing-on-a-laptop-1389-large.mp4"
-          badge="Coding"
-          showStatus
-          delay={1.5}
-          aspectRatio="video"
-          label="Active Session"
-        />
-        <InlineVideoCard
-          src="https://assets.mixkit.co/videos/preview/mixkit-lines-of-code-up-close-580-large.mp4"
-          badge="Code"
-          delay={1.7}
-          aspectRatio="video"
-          label="Clean Architecture"
-        />
-      </motion.div>
 
-      {/* Left floating video accent */}
-      <motion.div
-        initial={{ opacity: 0, x: -60 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1.6, duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="absolute left-6 bottom-32 hidden xl:block z-[4] w-44"
-      >
-        <InlineVideoCard
-          src="https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-the-computer-23200-large.mp4"
-          badge="Dev"
-          delay={1.8}
-          aspectRatio="video"
-          label="Building Ideas"
-        />
-      </motion.div>
+
+
 
       {/* Code tag divider */}
       <motion.div
