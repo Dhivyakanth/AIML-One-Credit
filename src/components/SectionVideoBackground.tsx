@@ -11,17 +11,17 @@ type VideoTheme = {
 
 const VIDEO_THEMES: Record<VideoSection, VideoTheme> = {
   about: {
-    src: "https://assets.mixkit.co/videos/preview/mixkit-man-working-on-his-laptop-43521-large.mp4",
+    src: "https://assets.mixkit.co/videos/preview/mixkit-young-man-typing-on-his-laptop-1379-large.mp4",
     overlay: "bg-[radial-gradient(circle_at_20%_20%,hsl(160_100%_45%/0.15),transparent_42%),linear-gradient(to_bottom,hsl(220_40%_5%/0.68),hsl(230_35%_4%/0.76))]",
     fallbackGradient: "bg-[radial-gradient(circle_at_20%_20%,hsl(160_100%_45%/0.14),transparent_44%),linear-gradient(135deg,hsl(220_42%_6%),hsl(228_40%_3%))]",
   },
   skills: {
-    src: "https://assets.mixkit.co/videos/preview/mixkit-close-up-of-programmer-typing-code-43543-large.mp4",
+    src: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smart-phone-with-an-abstract-visualization-19700-large.mp4",
     overlay: "bg-[radial-gradient(circle_at_80%_22%,hsl(195_100%_50%/0.16),transparent_40%),linear-gradient(to_bottom,hsl(215_45%_6%/0.68),hsl(220_35%_3%/0.78))]",
     fallbackGradient: "bg-[radial-gradient(circle_at_80%_22%,hsl(195_100%_50%/0.16),transparent_42%),linear-gradient(145deg,hsl(215_45%_7%),hsl(220_38%_3%))]",
   },
   experience: {
-    src: "https://assets.mixkit.co/videos/preview/mixkit-colleagues-gathered-around-a-computer-43544-large.mp4",
+    src: "https://assets.mixkit.co/videos/preview/mixkit-man-working-on-a-computer-in-a-dark-room-1540-large.mp4",
     overlay: "bg-[radial-gradient(circle_at_18%_78%,hsl(175_90%_45%/0.16),transparent_42%),linear-gradient(to_bottom,hsl(210_40%_6%/0.7),hsl(220_35%_3%/0.78))]",
     fallbackGradient: "bg-[radial-gradient(circle_at_18%_78%,hsl(175_90%_45%/0.15),transparent_44%),linear-gradient(135deg,hsl(208_42%_7%),hsl(220_35%_3%))]",
   },
@@ -31,7 +31,7 @@ const VIDEO_THEMES: Record<VideoSection, VideoTheme> = {
     fallbackGradient: "bg-[radial-gradient(circle_at_72%_22%,hsl(280_90%_65%/0.2),transparent_42%),linear-gradient(135deg,hsl(238_38%_8%),hsl(228_32%_4%))]",
   },
   education: {
-    src: "https://assets.mixkit.co/videos/preview/mixkit-student-writing-in-notebook-43538-large.mp4",
+    src: "https://assets.mixkit.co/videos/preview/mixkit-notebook-in-a-desk-with-several-pens-viewed-from-above-2007-large.mp4",
     overlay: "bg-[radial-gradient(circle_at_26%_30%,hsl(200_100%_55%/0.14),transparent_45%),linear-gradient(to_bottom,hsl(210_35%_7%/0.66),hsl(220_35%_4%/0.8))]",
     fallbackGradient: "bg-[radial-gradient(circle_at_26%_30%,hsl(200_100%_55%/0.14),transparent_45%),linear-gradient(145deg,hsl(212_36%_8%),hsl(223_34%_4%))]",
   },
@@ -124,9 +124,9 @@ const SectionVideoBackground = ({
             loop
             playsInline
             preload="metadata"
-            className="absolute inset-0 h-full w-full object-cover opacity-[0.28]"
+            className="absolute inset-0 h-full w-full object-cover opacity-[0.32]"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.28 }}
+            animate={{ opacity: 0.32 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
           >

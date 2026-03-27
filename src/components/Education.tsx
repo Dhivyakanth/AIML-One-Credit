@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { GraduationCap, Award, BookOpen } from "lucide-react";
 import GlowCard from "./GlowCard";
 import TextReveal from "./TextReveal";
+import InlineVideoCard from "./InlineVideoCard";
 
 const containerVariants = {
   hidden: {},
@@ -41,9 +42,34 @@ const Education = () => {
         transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
         <p className="section-label mb-3">// Education & Certifications</p>
-        <h2 className="font-heading text-3xl md:text-5xl font-bold text-foreground mb-16">
+        <h2 className="font-heading text-3xl md:text-5xl font-bold text-foreground mb-8">
           <TextReveal splitBy="word" variant="fade-up">Academic Background</TextReveal>
         </h2>
+
+        {/* Education section video strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="grid grid-cols-2 gap-4 mb-12"
+        >
+          <InlineVideoCard
+            src="https://assets.mixkit.co/videos/preview/mixkit-students-in-a-computer-lab-classroom-4-large.mp4"
+            badge="Campus"
+            label="K.S. Rangasamy College"
+            aspectRatio="video"
+            showStatus
+            delay={0.1}
+          />
+          <InlineVideoCard
+            src="https://assets.mixkit.co/videos/preview/mixkit-man-studying-at-home-with-laptop-and-books-3993-large.mp4"
+            badge="Learning"
+            label="Continuous Growth"
+            aspectRatio="video"
+            delay={0.25}
+          />
+        </motion.div>
       </motion.div>
 
       <motion.div

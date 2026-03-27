@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useInView } from "framer-motion";
 import { ArrowUpRight, X, ExternalLink } from "lucide-react";
 import TextReveal from "./TextReveal";
 import { useIsMobile } from "@/hooks/use-mobile";
+import InlineVideoCard from "./InlineVideoCard";
 
 import riverAiImg from "@/assets/project_river_ai.png";
 import aiChatbotImg from "@/assets/project_ai_chatbot.png";
@@ -468,6 +469,38 @@ const Projects = () => {
         <span className="text-primary font-mono text-sm">&lt;/</span>
         <div className="flex-1 h-px bg-gradient-to-r from-primary/40 via-primary/20 to-primary/40" />
         <span className="text-primary font-mono text-sm">&gt;</span>
+      </motion.div>
+
+      {/* Video reel strip */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="grid grid-cols-3 gap-4 mb-16"
+      >
+        <InlineVideoCard
+          src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-city-41108-large.mp4"
+          badge="IoT"
+          label="Smart Systems"
+          aspectRatio="video"
+          delay={0.1}
+        />
+        <InlineVideoCard
+          src="https://assets.mixkit.co/videos/preview/mixkit-artificial-intelligence-network-of-neurons-28570-large.mp4"
+          badge="AI"
+          label="Neural Networks"
+          aspectRatio="video"
+          showStatus
+          delay={0.25}
+        />
+        <InlineVideoCard
+          src="https://assets.mixkit.co/videos/preview/mixkit-graphic-animation-of-blue-technology-29506-large.mp4"
+          badge="ML"
+          label="Computer Vision"
+          aspectRatio="video"
+          delay={0.4}
+        />
       </motion.div>
 
       {/* Deck of Cards */}

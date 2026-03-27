@@ -2,6 +2,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef, useState, type MouseEvent } from "react";
 import GlowCard from "./GlowCard";
 import TextReveal from "./TextReveal";
+import InlineVideoCard from "./InlineVideoCard";
 
 const skillCategories = [
   {
@@ -119,6 +120,27 @@ const Skills = () => {
             <span className="text-primary font-mono text-sm">&lt;/</span>
             <div className="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent" />
             <span className="text-primary font-mono text-sm">&gt;</span>
+          </div>
+
+          {/* Skills section inline video */}
+          <div className="mt-8">
+            <InlineVideoCard
+              src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-futuristic-devices-99786-large.mp4"
+              badge="AI / ML"
+              label="Intelligent Systems"
+              aspectRatio="video"
+              delay={0.3}
+              showStatus
+            />
+          </div>
+          <div className="mt-4">
+            <InlineVideoCard
+              src="https://assets.mixkit.co/videos/preview/mixkit-computer-with-flowing-program-code-33770-large.mp4"
+              badge="Code"
+              label="Full Stack Development"
+              aspectRatio="video"
+              delay={0.5}
+            />
           </div>
         </motion.div>
 
