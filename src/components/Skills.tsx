@@ -1,5 +1,4 @@
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useRef, useState, type MouseEvent } from "react";
+import { motion } from "framer-motion";
 import GlowCard from "./GlowCard";
 import TextReveal from "./TextReveal";
 import InlineImageCard from "./InlineImageCard";
@@ -124,7 +123,7 @@ const Skills = () => {
 
           <div className="mt-8">
             <InlineImageCard
-              src="/skills-tech.jpg"
+              src="/skills-tech.webp"
               alt="AI full stack development visualization"
               badge="AI"
               label="AI Full Stack Development"

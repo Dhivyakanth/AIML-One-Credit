@@ -55,7 +55,7 @@ const Education = () => {
           className="grid grid-cols-2 gap-4 mb-12"
         >
           <InlineImageCard
-            src="/ksr-college.jpeg"
+            src="/ksr-college.webp"
             alt="K.S.Rangasamy College of Technology campus"
             badge="Campus"
             label="K.S.Rangasamy College of Technology"
@@ -64,7 +64,7 @@ const Education = () => {
             delay={0.1}
           />
           <InlineImageCard
-            src="/ksr-matric-school.jpg"
+            src="/ksr-matric-school.webp"
             alt="K.S.R Matric Higher Secondary School campus"
             badge="Learning"
             label="Academic Excellence"

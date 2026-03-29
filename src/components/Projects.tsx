@@ -5,9 +5,9 @@ import TextReveal from "./TextReveal";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InlineImageCard from "./InlineImageCard";
 
-import riverAiImg from "@/assets/project_river_ai.png";
-import aiChatbotImg from "@/assets/project_ai_chatbot.png";
-import signLangImg from "@/assets/project_sign_language.png";
+import riverAiImg from "@/assets/project_river_ai.webp";
+import aiChatbotImg from "@/assets/project_ai_chatbot.webp";
+import signLangImg from "@/assets/project_sign_language.webp";
 
 const projects = [
   {
@@ -486,7 +486,7 @@ const Projects = () => {
         className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-16"
       >
         <InlineImageCard
-          src="/project-ai.jpg"
+          src="/project-ai.webp"
           alt="Smart systems automation interface"
           badge="Smart"
           label="Smart Systems"
@@ -494,7 +494,7 @@ const Projects = () => {
           delay={0.1}
         />
         <InlineImageCard
-          src="/project-web.jpg"
+          src="/project-web.webp"
           alt="Neural network and AI nodes"
           badge="Neural"
           label="Neural Network"
@@ -503,7 +503,7 @@ const Projects = () => {
           delay={0.25}
         />
         <InlineImageCard
-          src="/project-design.jpg"
+          src="/project-design.webp"
           alt="Computer vision and machine perception"
           badge="Vision"
           label="Computer Vision"
@@ -511,7 +511,7 @@ const Projects = () => {
           delay={0.4}
         />
         <InlineImageCard
-          src="/project-mobile.jpg"
+          src="/project-mobile.webp"
           alt="Robotics arm in intelligent manufacturing"
           badge="Robotics"
           label="Robotics"

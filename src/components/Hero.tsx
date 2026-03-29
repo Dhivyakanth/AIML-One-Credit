@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import profileImg from "@/assets/profile.jpg";
+import profileImg from "@/assets/profile.webp";
 import { Mail, Phone, MapPin, Download, ChevronDown } from "lucide-react";
 import MagneticButton from "./MagneticButton";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -44,14 +44,29 @@ const Hero = () => {
 
   // Scroll detection for navbar
   useEffect(() => {
+    let rafId = 0;
+
     const onScroll = () => {
-      setScrolled(window.scrollY > 50);
+      if (rafId) {
+        return;
+      }
+
+      rafId = window.requestAnimationFrame(() => {
+        const nextScrolled = window.scrollY > 50;
+        setScrolled((prev) => (prev === nextScrolled ? prev : nextScrolled));
+        rafId = 0;
+      });
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+    };
   }, []);
 
   useEffect(() => {
