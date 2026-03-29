@@ -10,7 +10,7 @@ const Starfield = () => {
 
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
     if (!ctx) return;
 
     let animId: number;
@@ -21,6 +21,7 @@ const Starfield = () => {
     const frameInterval = 1000 / targetFps;
     let lastFrameTime = 0;
     let scrollY = 0;
+    let scrollRafId = 0;
     let isPageVisible = document.visibilityState === "visible";
 
     interface Star {
@@ -112,7 +113,14 @@ const Starfield = () => {
     }
 
     const handleScroll = () => {
-      scrollY = window.scrollY;
+      if (scrollRafId) {
+        return;
+      }
+
+      scrollRafId = window.requestAnimationFrame(() => {
+        scrollY = window.scrollY;
+        scrollRafId = 0;
+      });
     };
 
     const handleVisibility = () => {
@@ -246,6 +254,9 @@ const Starfield = () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("visibilitychange", handleVisibility);
+      if (scrollRafId) {
+        window.cancelAnimationFrame(scrollRafId);
+      }
       cancelAnimationFrame(animId);
     };
   }, [isMobile]);
@@ -254,7 +265,7 @@ const Starfield = () => {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 0 }}
+      style={{ zIndex: 0, transform: "translateZ(0)", contain: "strict" }}
     />
   );
 };

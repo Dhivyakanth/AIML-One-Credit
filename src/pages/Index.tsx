@@ -22,6 +22,22 @@ const sections = [
   { id: "contact", Component: Contact },
 ];
 
+const BELOW_THE_FOLD_MEDIA = [
+  "/skills-tech.webp",
+  "/experience-1.webp",
+  "/ksr-college.webp",
+  "/ksr-matric-school.webp",
+  "/project-ai.webp",
+  "/project-web.webp",
+  "/project-design.webp",
+  "/project-mobile.webp",
+  "https://assets.mixkit.co/videos/preview/mixkit-young-man-typing-on-his-laptop-1379-large.mp4",
+  "https://assets.mixkit.co/videos/preview/mixkit-man-working-on-a-computer-in-a-dark-room-1540-large.mp4",
+  "https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-city-41108-large.mp4",
+  "https://assets.mixkit.co/videos/preview/mixkit-notebook-in-a-desk-with-several-pens-viewed-from-above-2007-large.mp4",
+  "https://assets.mixkit.co/videos/preview/mixkit-network-of-connections-over-a-city-1744-large.mp4",
+];
+
 /**
  * Lightweight scroll-driven card shuffle.
  * Subtle rotation + fade on entry only for most sections.
@@ -132,40 +148,190 @@ const Index = () => {
       return;
     }
 
-    const preloadChunks = () => {
-      void import("@/components/Skills");
-      void import("@/components/Experience");
-      void import("@/components/Projects");
-      void import("@/components/Education");
-      void import("@/components/Contact");
-      void import("@/components/CustomCursor");
-      void import("@/components/Starfield");
-      void import("@/components/SectionVideoBackground");
+    const idleApi = window as Window & {
+      requestIdleCallback?: (
+        cb: (deadline: { timeRemaining: () => number; didTimeout: boolean }) => void,
+        options?: { timeout: number }
+      ) => number;
+      cancelIdleCallback?: (id: number) => void;
     };
 
-    const idleCallback = (window as Window & {
-      requestIdleCallback?: (cb: () => void) => number;
-      cancelIdleCallback?: (id: number) => void;
-    }).requestIdleCallback;
-    const cancelIdleCallback = (window as Window & {
-      cancelIdleCallback?: (id: number) => void;
-    }).cancelIdleCallback;
+    const appendedPrefetchLinks: HTMLLinkElement[] = [];
+    const cleanupImages: HTMLImageElement[] = [];
+
+    const scheduledRafs = new Set<number>();
+    const scheduledTimeouts = new Set<number>();
+    const scheduledIdle = new Set<number>();
+
+    const scheduleQueue = (tasks: Array<() => void>) => {
+      let cursor = 0;
+
+      const runQueue = () => {
+        if (cursor >= tasks.length) {
+          return;
+        }
+
+        if (idleApi.requestIdleCallback) {
+          const idleId = idleApi.requestIdleCallback(
+            (deadline) => {
+              scheduledIdle.delete(idleId);
+
+              while (
+                cursor < tasks.length &&
+                (deadline.timeRemaining() > 4 || deadline.didTimeout)
+              ) {
+                tasks[cursor++]();
+              }
+
+              runQueue();
+            },
+            { timeout: 1200 }
+          );
+          scheduledIdle.add(idleId);
+          return;
+        }
+
+        const rafId = window.requestAnimationFrame(() => {
+          scheduledRafs.delete(rafId);
+          const budgetEnd = performance.now() + 6;
+
+          while (cursor < tasks.length && performance.now() < budgetEnd) {
+            tasks[cursor++]();
+          }
+
+          if (cursor < tasks.length) {
+            const timeoutId = window.setTimeout(runQueue, 16);
+            scheduledTimeouts.add(timeoutId);
+          }
+        });
+
+        scheduledRafs.add(rafId);
+      };
+
+      runQueue();
+    };
+
+    let hasPreloaded = false;
+
+    const preloadChunks = () => {
+      if (hasPreloaded) {
+        return;
+      }
+
+      hasPreloaded = true;
+
+      const tasks: Array<() => void> = [
+        () => {
+          void import("@/components/Skills");
+        },
+        () => {
+          void import("@/components/Experience");
+        },
+        () => {
+          void import("@/components/Projects");
+        },
+        () => {
+          void import("@/components/Education");
+        },
+        () => {
+          void import("@/components/Contact");
+        },
+        () => {
+          void import("@/components/CustomCursor");
+        },
+        () => {
+          void import("@/components/Starfield");
+        },
+        () => {
+          void import("@/components/SectionVideoBackground");
+        },
+      ];
+
+      for (const src of BELOW_THE_FOLD_MEDIA) {
+        if (src.endsWith(".mp4")) {
+          tasks.push(() => {
+            const prefetchLink = document.createElement("link");
+            prefetchLink.rel = "prefetch";
+            prefetchLink.as = "video";
+            prefetchLink.href = src;
+            document.head.appendChild(prefetchLink);
+            appendedPrefetchLinks.push(prefetchLink);
+          });
+          continue;
+        }
+
+        tasks.push(() => {
+          const image = new Image();
+          image.decoding = "async";
+          image.src = src;
+          cleanupImages.push(image);
+          if (typeof image.decode === "function") {
+            void image.decode().catch(() => {
+              // Ignore decode errors for optional pre-warmed media.
+            });
+          }
+        });
+      }
+
+      scheduleQueue(tasks);
+    };
 
     let timeoutId = 0;
-    let idleId = 0;
+    let rafId = 0;
 
-    if (idleCallback) {
-      idleId = idleCallback(preloadChunks);
+    const preloadOnIntent = () => {
+      preloadChunks();
+      removeIntentListeners();
+    };
+
+    const removeIntentListeners = () => {
+      window.removeEventListener("wheel", preloadOnIntent);
+      window.removeEventListener("touchstart", preloadOnIntent);
+      window.removeEventListener("pointerdown", preloadOnIntent);
+      window.removeEventListener("keydown", preloadOnIntent);
+    };
+
+    window.addEventListener("wheel", preloadOnIntent, { passive: true });
+    window.addEventListener("touchstart", preloadOnIntent, { passive: true });
+    window.addEventListener("pointerdown", preloadOnIntent, { passive: true });
+    window.addEventListener("keydown", preloadOnIntent, { passive: true });
+
+    rafId = window.requestAnimationFrame(() => {
+      preloadChunks();
+    });
+
+    if (idleApi.requestIdleCallback) {
+      const idleId = idleApi.requestIdleCallback(() => {
+        scheduledIdle.delete(idleId);
+        preloadChunks();
+      });
+      scheduledIdle.add(idleId);
     } else {
-      timeoutId = window.setTimeout(preloadChunks, 900);
+      timeoutId = window.setTimeout(preloadChunks, 220);
     }
 
     return () => {
+      removeIntentListeners();
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
       if (timeoutId) {
         window.clearTimeout(timeoutId);
       }
-      if (idleId && cancelIdleCallback) {
-        cancelIdleCallback(idleId);
+      for (const scheduledId of scheduledIdle) {
+        idleApi.cancelIdleCallback?.(scheduledId);
+      }
+      for (const scheduledId of scheduledRafs) {
+        window.cancelAnimationFrame(scheduledId);
+      }
+      for (const scheduledId of scheduledTimeouts) {
+        window.clearTimeout(scheduledId);
+      }
+      for (const prefetchLink of appendedPrefetchLinks) {
+        prefetchLink.remove();
+      }
+      for (const image of cleanupImages) {
+        image.src = "";
       }
     };
   }, []);

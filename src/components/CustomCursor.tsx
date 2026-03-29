@@ -94,12 +94,13 @@ const CustomCursor = () => {
 
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: true });
+    const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
     if (!ctx) return;
 
     const targetFps = 36;
     const frameInterval = 1000 / targetFps;
     let lastFrameTime = 0;
+    let isPageVisible = document.visibilityState === "visible";
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -107,17 +108,26 @@ const CustomCursor = () => {
     };
     resize();
 
-    const handleMouse = (e: MouseEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
       mouse.current = { x: e.clientX, y: e.clientY };
     };
 
-    const handleMouseOver = (e: MouseEvent) => {
+    const handlePointerOver = (e: PointerEvent) => {
       const target = e.target as HTMLElement;
       const interactive = target.closest("a, button, [role='button'], input, textarea, select, [data-cursor='pointer']");
       hoveringRef.current = !!interactive;
     };
 
+    const handleVisibilityChange = () => {
+      isPageVisible = document.visibilityState === "visible";
+    };
+
     const draw = (timestamp = 0) => {
+      if (!isPageVisible) {
+        animationId.current = requestAnimationFrame(draw);
+        return;
+      }
+
       if (timestamp - lastFrameTime < frameInterval) {
         animationId.current = requestAnimationFrame(draw);
         return;
@@ -223,14 +233,16 @@ const CustomCursor = () => {
     };
 
     window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", handleMouse, { passive: true });
-    window.addEventListener("mouseover", handleMouseOver);
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("pointerover", handlePointerOver);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     draw();
 
     return () => {
       window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", handleMouse);
-      window.removeEventListener("mouseover", handleMouseOver);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerover", handlePointerOver);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       cancelAnimationFrame(animationId.current);
     };
   }, [isTouchDevice, createParticle, drawStar]);
@@ -242,7 +254,7 @@ const CustomCursor = () => {
       <canvas
         ref={canvasRef}
         className="fixed inset-0 z-[9999] pointer-events-none"
-        style={{ width: "100vw", height: "100vh" }}
+        style={{ width: "100vw", height: "100vh", transform: "translateZ(0)", contain: "strict" }}
       />
       <style>{`* { cursor: none !important; }`}</style>
     </>
