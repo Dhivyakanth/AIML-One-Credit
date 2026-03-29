@@ -151,6 +151,9 @@ const ProjectCard = ({
           <img
             src={project.image}
             alt={project.title}
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div
@@ -254,6 +257,9 @@ const ProjectModal = ({
           <img
             src={project.image}
             alt={project.title}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
             className="w-full h-full object-cover"
           />
           <div
@@ -480,7 +486,7 @@ const Projects = () => {
         className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-16"
       >
         <InlineImageCard
-          src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=1400&q=80"
+          src="/project-ai.jpg"
           alt="Smart systems automation interface"
           badge="Smart"
           label="Smart Systems"
@@ -488,7 +494,7 @@ const Projects = () => {
           delay={0.1}
         />
         <InlineImageCard
-          src="https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=1400"
+          src="/project-web.jpg"
           alt="Neural network and AI nodes"
           badge="Neural"
           label="Neural Network"
@@ -497,7 +503,7 @@ const Projects = () => {
           delay={0.25}
         />
         <InlineImageCard
-          src="https://images.pexels.com/photos/8566471/pexels-photo-8566471.jpeg?auto=compress&cs=tinysrgb&w=1400"
+          src="/project-design.jpg"
           alt="Computer vision and machine perception"
           badge="Vision"
           label="Computer Vision"
@@ -505,7 +511,7 @@ const Projects = () => {
           delay={0.4}
         />
         <InlineImageCard
-          src="https://images.unsplash.com/photo-1561144257-e32e8efc6c4f?auto=format&fit=crop&w=1400&q=80"
+          src="/project-mobile.jpg"
           alt="Robotics arm in intelligent manufacturing"
           badge="Robotics"
           label="Robotics"

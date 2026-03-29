@@ -55,7 +55,7 @@ const Education = () => {
           className="grid grid-cols-2 gap-4 mb-12"
         >
           <InlineImageCard
-            src="https://ksrct.ac.in/assets/images/aboutus/aboutksrctimg.jpeg"
+            src="/ksr-college.jpeg"
             alt="K.S.Rangasamy College of Technology campus"
             badge="Campus"
             label="K.S.Rangasamy College of Technology"

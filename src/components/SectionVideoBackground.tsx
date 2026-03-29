@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type VideoSection = "about" | "skills" | "experience" | "projects" | "education" | "contact";
 
@@ -13,7 +14,7 @@ const VIDEO_THEMES: Record<VideoSection, VideoTheme> = {
   about: {
     src: "https://assets.mixkit.co/videos/preview/mixkit-young-man-typing-on-his-laptop-1379-large.mp4",
     overlay: "bg-[radial-gradient(circle_at_20%_20%,hsl(160_100%_45%/0.15),transparent_42%),linear-gradient(to_bottom,hsl(220_40%_5%/0.68),hsl(230_35%_4%/0.76))]",
-    fallbackGradient: "bg-[radial-gradient(circle_at_20%_20%,hsl(160_100%_45%/0.14),transparent_44%),linear-gradient(135deg,hsl(220_42%_6%),hsl(228_40%_3%))]",
+    fallbackGradient: "bg-[radial-gradient(circle_at_20%_20%,hsl(160_100%_45%/0.14),transparent_44%),linear-gradient(135deg,hsl(220_42%_6%),hsl(228_40%_3%))]"
   },
   skills: {
     overlay: "bg-[radial-gradient(circle_at_80%_22%,hsl(195_100%_50%/0.16),transparent_40%),linear-gradient(to_bottom,hsl(215_45%_6%/0.68),hsl(220_35%_3%/0.78))]",
@@ -22,22 +23,22 @@ const VIDEO_THEMES: Record<VideoSection, VideoTheme> = {
   experience: {
     src: "https://assets.mixkit.co/videos/preview/mixkit-man-working-on-a-computer-in-a-dark-room-1540-large.mp4",
     overlay: "bg-[radial-gradient(circle_at_18%_78%,hsl(175_90%_45%/0.16),transparent_42%),linear-gradient(to_bottom,hsl(210_40%_6%/0.7),hsl(220_35%_3%/0.78))]",
-    fallbackGradient: "bg-[radial-gradient(circle_at_18%_78%,hsl(175_90%_45%/0.15),transparent_44%),linear-gradient(135deg,hsl(208_42%_7%),hsl(220_35%_3%))]",
+    fallbackGradient: "bg-[radial-gradient(circle_at_18%_78%,hsl(175_90%_45%/0.15),transparent_44%),linear-gradient(135deg,hsl(208_42%_7%),hsl(220_35%_3%))]"
   },
   projects: {
     src: "https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-a-city-41108-large.mp4",
     overlay: "bg-[radial-gradient(circle_at_72%_22%,hsl(280_90%_65%/0.2),transparent_40%),linear-gradient(to_bottom,hsl(240_35%_6%/0.66),hsl(230_35%_4%/0.8))]",
-    fallbackGradient: "bg-[radial-gradient(circle_at_72%_22%,hsl(280_90%_65%/0.2),transparent_42%),linear-gradient(135deg,hsl(238_38%_8%),hsl(228_32%_4%))]",
+    fallbackGradient: "bg-[radial-gradient(circle_at_72%_22%,hsl(280_90%_65%/0.2),transparent_42%),linear-gradient(135deg,hsl(238_38%_8%),hsl(228_32%_4%))]"
   },
   education: {
     src: "https://assets.mixkit.co/videos/preview/mixkit-notebook-in-a-desk-with-several-pens-viewed-from-above-2007-large.mp4",
     overlay: "bg-[radial-gradient(circle_at_26%_30%,hsl(200_100%_55%/0.14),transparent_45%),linear-gradient(to_bottom,hsl(210_35%_7%/0.66),hsl(220_35%_4%/0.8))]",
-    fallbackGradient: "bg-[radial-gradient(circle_at_26%_30%,hsl(200_100%_55%/0.14),transparent_45%),linear-gradient(145deg,hsl(212_36%_8%),hsl(223_34%_4%))]",
+    fallbackGradient: "bg-[radial-gradient(circle_at_26%_30%,hsl(200_100%_55%/0.14),transparent_45%),linear-gradient(145deg,hsl(212_36%_8%),hsl(223_34%_4%))]"
   },
   contact: {
     src: "https://assets.mixkit.co/videos/preview/mixkit-network-of-connections-over-a-city-1744-large.mp4",
     overlay: "bg-[radial-gradient(circle_at_82%_84%,hsl(152_100%_48%/0.14),transparent_46%),linear-gradient(to_bottom,hsl(210_30%_6%/0.66),hsl(220_30%_4%/0.82))]",
-    fallbackGradient: "bg-[radial-gradient(circle_at_82%_84%,hsl(152_100%_48%/0.14),transparent_46%),linear-gradient(135deg,hsl(210_34%_8%),hsl(225_30%_4%))]",
+    fallbackGradient: "bg-[radial-gradient(circle_at_82%_84%,hsl(152_100%_48%/0.14),transparent_46%),linear-gradient(135deg,hsl(210_34%_8%),hsl(225_30%_4%))]"
   },
 };
 
@@ -50,10 +51,14 @@ const SectionVideoBackground = ({
   sectionIds = ["about", "skills", "experience", "projects", "education", "contact"],
   defaultSection = "about",
 }: SectionVideoBackgroundProps) => {
+  const isMobile = useIsMobile();
   const [activeSection, setActiveSection] = useState<VideoSection>(defaultSection);
   const [hasVideoError, setHasVideoError] = useState(false);
+  const [shouldEnableVideo, setShouldEnableVideo] = useState(false);
 
   const activeTheme = useMemo(() => VIDEO_THEMES[activeSection] ?? VIDEO_THEMES.about, [activeSection]);
+
+  const shouldRenderVideo = shouldEnableVideo && !hasVideoError && !!activeTheme.src;
 
   useEffect(() => {
     setHasVideoError(false);
@@ -72,53 +77,52 @@ const SectionVideoBackground = ({
       return;
     }
 
-    const updateFromScroll = () => {
-      const viewportMiddle = window.innerHeight * 0.45;
-      let bestId = defaultSection;
-      let bestDistance = Number.POSITIVE_INFINITY;
-
-      for (const el of sectionElements) {
-        const rect = el.getBoundingClientRect();
-        const distance = Math.abs(rect.top - viewportMiddle);
-
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestId = el.id as VideoSection;
+    const visibleRatios = new Map<string, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          visibleRatios.set(entry.target.id, entry.intersectionRatio);
         }
+
+        let bestId = defaultSection;
+        let bestRatio = 0;
+
+        for (const [id, ratio] of visibleRatios.entries()) {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestId = id;
+          }
+        }
+
+        if (bestRatio > 0) {
+          setActiveSection((prev) => (prev === bestId ? prev : (bestId as VideoSection)));
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-45% 0px -45% 0px",
+        threshold: [0, 0.5, 1],
       }
+    );
 
-      setActiveSection(bestId);
-    };
-
-    updateFromScroll();
-
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) {
-        return;
-      }
-
-      ticking = true;
-      window.requestAnimationFrame(() => {
-        updateFromScroll();
-        ticking = false;
-      });
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    for (const sectionElement of sectionElements) {
+      observer.observe(sectionElement);
+    }
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      observer.disconnect();
     };
   }, [defaultSection, sectionIds]);
+
+  useEffect(() => {
+    setShouldEnableVideo(false);
+  }, [isMobile]);
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
       <div className={`absolute inset-0 ${activeTheme.fallbackGradient}`} />
 
-      {!hasVideoError && !!activeTheme.src && (
+      {shouldRenderVideo && (
         <AnimatePresence mode="wait">
           <motion.video
             key={activeTheme.src}
@@ -126,7 +130,7 @@ const SectionVideoBackground = ({
             muted
             loop
             playsInline
-            preload="auto"
+            preload="none"
             onError={() => setHasVideoError(true)}
             className="absolute inset-0 h-full w-full object-cover opacity-[0.34]"
             initial={{ opacity: 0 }}

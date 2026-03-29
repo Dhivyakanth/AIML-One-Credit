@@ -91,7 +91,7 @@ const Experience = () => {
 
           <div className="mt-8">
             <InlineImageCard
-              src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1400&q=80"
+              src="/experience-1.jpg"
               alt="AI generated portrait with full stack analytics"
               badge="AI"
               label="AI Work Experience"

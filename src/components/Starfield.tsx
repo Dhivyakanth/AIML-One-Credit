@@ -1,17 +1,27 @@
 import { useEffect, useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Starfield = () => {
+  const isMobile = useIsMobile();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     let animId: number;
-    let dpr = window.devicePixelRatio || 1;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lowPowerDevice = isMobile || prefersReducedMotion || (navigator.hardwareConcurrency ?? 8) <= 4;
+    let dpr = Math.min(window.devicePixelRatio || 1, lowPowerDevice ? 1 : 1.5);
+    const targetFps = lowPowerDevice ? 24 : 36;
+    const frameInterval = 1000 / targetFps;
+    let lastFrameTime = 0;
     let scrollY = 0;
+    let isPageVisible = document.visibilityState === "visible";
 
     interface Star {
       x: number; y: number; z: number;
@@ -28,7 +38,7 @@ const Starfield = () => {
     }
 
     const stars: Star[] = [];
-    const STAR_COUNT = 200;
+    const STAR_COUNT = lowPowerDevice ? 70 : 120;
     const shootingStars: ShootingStar[] = [];
     let lastShootTime = 0;
     const SHOOT_MIN = 5000;
@@ -38,7 +48,7 @@ const Starfield = () => {
     let nebulaCanvas: HTMLCanvasElement | null = null;
 
     const resize = () => {
-      dpr = window.devicePixelRatio || 1;
+      dpr = Math.min(window.devicePixelRatio || 1, lowPowerDevice ? 1 : 1.5);
       canvas.width = canvas.offsetWidth * dpr;
       canvas.height = canvas.offsetHeight * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -104,9 +114,26 @@ const Starfield = () => {
     const handleScroll = () => {
       scrollY = window.scrollY;
     };
+
+    const handleVisibility = () => {
+      isPageVisible = document.visibilityState === "visible";
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("visibilitychange", handleVisibility);
 
     const render = (timestamp: number) => {
+      if (!isPageVisible) {
+        animId = requestAnimationFrame(render);
+        return;
+      }
+
+      if (timestamp - lastFrameTime < frameInterval) {
+        animId = requestAnimationFrame(render);
+        return;
+      }
+      lastFrameTime = timestamp;
+
       const width = w();
       const height = h();
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -117,7 +144,7 @@ const Starfield = () => {
       }
 
       // Shooting stars
-      if (timestamp - lastShootTime > nextShootAt) {
+      if (!lowPowerDevice && timestamp - lastShootTime > nextShootAt) {
         lastShootTime = timestamp;
         nextShootAt = Math.random() * (SHOOT_MAX - SHOOT_MIN) + SHOOT_MIN;
         const angle = Math.PI * 0.2 + (Math.random() - 0.5) * 0.4;
@@ -135,7 +162,7 @@ const Starfield = () => {
       for (let i = shootingStars.length - 1; i >= 0; i--) {
         const s = shootingStars[i];
         s.tail.push({ x: s.x, y: s.y });
-        if (s.tail.length > 50) s.tail.shift();
+        if (s.tail.length > 36) s.tail.shift();
         s.x += s.vx;
         s.y += s.vy;
         s.vx *= 1.005;
@@ -196,18 +223,16 @@ const Starfield = () => {
         const sy = ((star.baseY - parallaxOffset) % 1 + 1) % 1 * height;
         const sx = star.x * width;
 
-        const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, size * 3);
-        grad.addColorStop(0, `hsla(152, 80%, 75%, ${alpha * 0.8})`);
-        grad.addColorStop(0.4, `hsla(152, 60%, 55%, ${alpha * 0.3})`);
-        grad.addColorStop(1, "hsla(152, 60%, 55%, 0)");
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(sx, sy, size * 3, 0, Math.PI * 2);
-        ctx.fill();
+        if (!lowPowerDevice) {
+          ctx.fillStyle = `hsla(152, 60%, 55%, ${alpha * 0.22})`;
+          ctx.beginPath();
+          ctx.arc(sx, sy, size * 2.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
         ctx.fillStyle = `hsla(0, 0%, 100%, ${alpha})`;
         ctx.beginPath();
-        ctx.arc(sx, sy, size * 0.6, 0, Math.PI * 2);
+        ctx.arc(sx, sy, size * 0.55, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -220,9 +245,10 @@ const Starfield = () => {
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("visibilitychange", handleVisibility);
       cancelAnimationFrame(animId);
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <canvas

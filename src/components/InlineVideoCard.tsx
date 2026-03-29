@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 
 interface InlineVideoCardProps {
@@ -23,10 +23,13 @@ const InlineVideoCard = ({
   glowColor = "hsl(152 100% 50%)",
   showStatus = false,
 }: InlineVideoCardProps) => {
+  const cardRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const isInView = useInView(cardRef, { once: true, margin: "120px" });
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasVideoError, setHasVideoError] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
 
   const aspectClass =
     aspectRatio === "video"
@@ -37,7 +40,7 @@ const InlineVideoCard = ({
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !shouldLoadVideo) return;
     video.playbackRate = 0.75; // Slightly slowed for cinematic feel
     const tryPlay = async () => {
       try {
@@ -47,7 +50,13 @@ const InlineVideoCard = ({
       }
     };
     tryPlay();
-  }, [isLoaded]);
+  }, [isLoaded, shouldLoadVideo]);
+
+  useEffect(() => {
+    if (isInView || isHovered) {
+      setShouldLoadVideo(true);
+    }
+  }, [isInView, isHovered]);
 
   useEffect(() => {
     setHasVideoError(false);
@@ -67,6 +76,7 @@ const InlineVideoCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`relative group ${className}`}
+      ref={cardRef}
     >
       {/* Outer glow ring */}
       <motion.div
@@ -130,7 +140,7 @@ const InlineVideoCard = ({
         )}
 
         {/* Video */}
-        {!hasVideoError ? (
+        {shouldLoadVideo && !hasVideoError ? (
           <video
             ref={videoRef}
             src={src}
@@ -138,7 +148,7 @@ const InlineVideoCard = ({
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             onLoadedData={() => setIsLoaded(true)}
             onError={() => setHasVideoError(true)}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

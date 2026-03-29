@@ -31,18 +31,18 @@ const CustomCursor = () => {
   const mouse = useRef({ x: -100, y: -100 });
   const prevMouse = useRef({ x: -100, y: -100 });
   const animationId = useRef<number>(0);
+  const hoveringRef = useRef(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
   const lastEmit = useRef(0);
 
   // Config
-  const particleSize = 4;
-  const trailWidth = 25;
-  const fadeSpeed = 0.015;
-  const glowIntensity = 12;
+  const particleSize = 3.2;
+  const trailWidth = 20;
+  const fadeSpeed = 0.02;
+  const glowIntensity = 10;
   const motionSensitivity = 1.2;
-  const maxParticles = 120;
-  const emitRate = 3;
+  const maxParticles = 56;
+  const emitRate = 8;
 
   const createParticle = useCallback((x: number, y: number, speed: number): Particle => {
     const depth = Math.random() * 0.6 + 0.4;
@@ -85,12 +85,21 @@ const CustomCursor = () => {
   }, []);
 
   useEffect(() => {
-    if (isTouchDevice) return;
+    if (typeof window === "undefined") return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const lowPowerDevice = prefersReducedMotion || (navigator.hardwareConcurrency ?? 8) <= 4;
+
+    if (isTouchDevice || lowPowerDevice) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
+
+    const targetFps = 36;
+    const frameInterval = 1000 / targetFps;
+    let lastFrameTime = 0;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -105,10 +114,16 @@ const CustomCursor = () => {
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const interactive = target.closest("a, button, [role='button'], input, textarea, select, [data-cursor='pointer']");
-      setIsHovering(!!interactive);
+      hoveringRef.current = !!interactive;
     };
 
-    const draw = () => {
+    const draw = (timestamp = 0) => {
+      if (timestamp - lastFrameTime < frameInterval) {
+        animationId.current = requestAnimationFrame(draw);
+        return;
+      }
+      lastFrameTime = timestamp;
+
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
@@ -173,6 +188,7 @@ const CustomCursor = () => {
       // Draw cursor dot
       if (mouse.current.x > 0) {
         ctx.save();
+        const isHovering = hoveringRef.current;
         const dotSize = isHovering ? 10 : 6;
         const dotGlow = isHovering ? 24 : 14;
         ctx.shadowBlur = dotGlow;
@@ -207,7 +223,7 @@ const CustomCursor = () => {
     };
 
     window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", handleMouse);
+    window.addEventListener("mousemove", handleMouse, { passive: true });
     window.addEventListener("mouseover", handleMouseOver);
     draw();
 
@@ -217,7 +233,7 @@ const CustomCursor = () => {
       window.removeEventListener("mouseover", handleMouseOver);
       cancelAnimationFrame(animationId.current);
     };
-  }, [isTouchDevice, isHovering, createParticle, drawStar]);
+  }, [isTouchDevice, createParticle, drawStar]);
 
   if (isTouchDevice) return null;
 

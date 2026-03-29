@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import profileImg from "@/assets/profile.jpg";
 import { Mail, Phone, MapPin, Download, ChevronDown } from "lucide-react";
 import MagneticButton from "./MagneticButton";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 
 const roles = ["Full Stack Developer", "AI & ML Engineer", "Problem Solver", "Tech Enthusiast"];
@@ -10,6 +11,7 @@ const roles = ["Full Stack Developer", "AI & ML Engineer", "Problem Solver", "Te
 const navItems = ["about", "skills", "experience", "projects", "education", "contact"];
 
 const Hero = () => {
+  const isMobile = useIsMobile();
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -19,6 +21,7 @@ const Hero = () => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("about");
+  const [showHeroVideo, setShowHeroVideo] = useState(false);
 
   // Track scroll directly to avoid spring lag that can feel sticky.
   const titleY = useTransform(scrollYProgress, [0, 1], [0, -52]);
@@ -41,38 +44,69 @@ const Hero = () => {
 
   // Scroll detection for navbar
   useEffect(() => {
-    let ticking = false;
-
-    const updateOnScroll = () => {
-      setScrolled(window.scrollY > 50);
-
-      // Active section detection
-      for (const id of [...navItems].reverse()) {
-        const el = document.getElementById(id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 200) {
-            setActiveSection(id);
-            break;
-          }
-        }
-      }
-
-      ticking = false;
-    };
-
     const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(updateOnScroll);
-        ticking = true;
-      }
+      setScrolled(window.scrollY > 50);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    updateOnScroll();
+    onScroll();
 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const sectionElements = navItems
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    if (sectionElements.length === 0) {
+      return;
+    }
+
+    const ratios = new Map<string, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          ratios.set(entry.target.id, entry.intersectionRatio);
+        }
+
+        let bestSection = "about";
+        let bestRatio = 0;
+
+        for (const [id, ratio] of ratios.entries()) {
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            bestSection = id;
+          }
+        }
+
+        if (bestRatio > 0) {
+          setActiveSection((prev) => (prev === bestSection ? prev : bestSection));
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-40% 0px -45% 0px",
+        threshold: [0, 0.5, 1],
+      }
+    );
+
+    for (const sectionElement of sectionElements) {
+      observer.observe(sectionElement);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    setShowHeroVideo(false);
+  }, [isMobile]);
 
   // Character animation variants
   const titleChars = "I'M A".split("");
@@ -116,18 +150,21 @@ const Hero = () => {
       {/* Background Video & Gradient overlay */}
       <motion.div className="absolute inset-0 w-full h-full overflow-hidden" style={{ opacity: bgOpacity }}>
         {/* Background video */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-screen"
-        >
-          <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-particles-floating-against-a-dark-background-154-large.mp4"
-            type="video/mp4"
-          />
-        </video>
+        {showHeroVideo && (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="none"
+            className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-screen"
+          >
+            <source
+              src="https://assets.mixkit.co/videos/preview/mixkit-particles-floating-against-a-dark-background-154-large.mp4"
+              type="video/mp4"
+            />
+          </video>
+        )}
         
         {/* Gradients to blend the video smoothly */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background z-10" />
@@ -325,6 +362,9 @@ const Hero = () => {
             <img
               src={profileImg}
               alt="Dhivyakanth P - AI & ML Developer"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               className="w-full h-full object-cover object-top"
             />
             {/* Status dot */}

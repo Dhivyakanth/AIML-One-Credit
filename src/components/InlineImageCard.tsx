@@ -77,6 +77,8 @@ const InlineImageCard = ({
             src={src}
             alt={alt}
             loading="lazy"
+            decoding="async"
+            fetchPriority="low"
             onError={() => setHasImageError(true)}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           />

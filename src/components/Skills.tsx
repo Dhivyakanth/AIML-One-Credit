@@ -124,7 +124,7 @@ const Skills = () => {
 
           <div className="mt-8">
             <InlineImageCard
-              src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1400&q=80"
+              src="/skills-tech.jpg"
               alt="AI full stack development visualization"
               badge="AI"
               label="AI Full Stack Development"

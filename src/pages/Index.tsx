@@ -1,15 +1,17 @@
-import { useRef } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Hero from "@/components/Hero";
-import Skills from "@/components/Skills";
-import Experience from "@/components/Experience";
-import Projects from "@/components/Projects";
-import Education from "@/components/Education";
-import Contact from "@/components/Contact";
 import BackToTop from "@/components/BackToTop";
-import CustomCursor from "@/components/CustomCursor";
-import Starfield from "@/components/Starfield";
-import SectionVideoBackground from "@/components/SectionVideoBackground";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+const Skills = lazy(() => import("@/components/Skills"));
+const Experience = lazy(() => import("@/components/Experience"));
+const Projects = lazy(() => import("@/components/Projects"));
+const Education = lazy(() => import("@/components/Education"));
+const Contact = lazy(() => import("@/components/Contact"));
+const CustomCursor = lazy(() => import("@/components/CustomCursor"));
+const Starfield = lazy(() => import("@/components/Starfield"));
+const SectionVideoBackground = lazy(() => import("@/components/SectionVideoBackground"));
 
 const sections = [
   { id: "hero", Component: Hero },
@@ -102,6 +104,10 @@ const ShuffleSection = ({
         transformPerspective: 1400,
         transformOrigin: "center center",
         willChange: "transform, opacity",
+        contain: "layout paint style",
+        contentVisibility: "auto",
+        containIntrinsicSize: "1200px",
+        backfaceVisibility: "hidden",
       }}
       className="relative"
     >
@@ -111,16 +117,99 @@ const ShuffleSection = ({
 };
 
 const Index = () => {
+  const isMobile = useIsMobile();
+  const [mountEnhancedVisuals, setMountEnhancedVisuals] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const connection = (navigator as Navigator & {
+      connection?: { saveData?: boolean };
+    }).connection;
+    if (connection?.saveData) {
+      return;
+    }
+
+    const preloadChunks = () => {
+      void import("@/components/Skills");
+      void import("@/components/Experience");
+      void import("@/components/Projects");
+      void import("@/components/Education");
+      void import("@/components/Contact");
+      void import("@/components/CustomCursor");
+      void import("@/components/Starfield");
+      void import("@/components/SectionVideoBackground");
+    };
+
+    const idleCallback = (window as Window & {
+      requestIdleCallback?: (cb: () => void) => number;
+      cancelIdleCallback?: (id: number) => void;
+    }).requestIdleCallback;
+    const cancelIdleCallback = (window as Window & {
+      cancelIdleCallback?: (id: number) => void;
+    }).cancelIdleCallback;
+
+    let timeoutId = 0;
+    let idleId = 0;
+
+    if (idleCallback) {
+      idleId = idleCallback(preloadChunks);
+    } else {
+      timeoutId = window.setTimeout(preloadChunks, 900);
+    }
+
+    return () => {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+      if (idleId && cancelIdleCallback) {
+        cancelIdleCallback(idleId);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (isMobile || prefersReducedMotion) {
+      setMountEnhancedVisuals(false);
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      setMountEnhancedVisuals(true);
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [isMobile]);
+
   return (
     <div className="bg-background relative overflow-x-hidden">
-      <SectionVideoBackground />
+      {mountEnhancedVisuals && (
+        <Suspense fallback={null}>
+          <SectionVideoBackground />
+        </Suspense>
+      )}
 
       {/* Global starfield */}
       <div className="fixed inset-0 z-[1] pointer-events-none">
-        <Starfield />
+        {mountEnhancedVisuals && (
+          <Suspense fallback={null}>
+            <Starfield />
+          </Suspense>
+        )}
       </div>
 
-      <CustomCursor />
+      {mountEnhancedVisuals && (
+        <Suspense fallback={null}>
+          <CustomCursor />
+        </Suspense>
+      )}
 
       {/* Top gradient overlay */}
       <div className="fixed top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent z-[2] pointer-events-none" />
@@ -133,7 +222,9 @@ const Index = () => {
             index={i}
             isLast={i === sections.length - 1}
           >
-            <s.Component />
+            <Suspense fallback={<div className="h-24" aria-hidden="true" />}>
+              <s.Component />
+            </Suspense>
             {/* Gradient divider between sections */}
             {i > 0 && i < sections.length - 1 && (
               <motion.div

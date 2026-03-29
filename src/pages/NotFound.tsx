@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import SectionVideoBackground from "@/components/SectionVideoBackground";
+import { lazy, Suspense, useEffect } from "react";
+
+const SectionVideoBackground = lazy(() => import("@/components/SectionVideoBackground"));
 
 const NotFound = () => {
   const location = useLocation();
@@ -11,7 +12,9 @@ const NotFound = () => {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background">
-      <SectionVideoBackground sectionIds={[]} defaultSection="contact" />
+      <Suspense fallback={null}>
+        <SectionVideoBackground sectionIds={[]} defaultSection="contact" />
+      </Suspense>
 
       <div className="relative z-10 rounded-2xl border border-border/60 bg-background/65 px-10 py-12 text-center backdrop-blur-md">
         <h1 className="mb-4 text-4xl font-bold">404</h1>
