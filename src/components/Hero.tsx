@@ -23,12 +23,12 @@ const Hero = () => {
   const [activeSection, setActiveSection] = useState("about");
   const [showHeroVideo, setShowHeroVideo] = useState(false);
 
-  // Track scroll directly to avoid spring lag that can feel sticky.
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, -52]);
+  // Lightweight parallax — only Y, no blur filter on scroll-linked styles
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -40]);
   const titleOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
-  const imageY = useTransform(scrollYProgress, [0, 1], [0, -26]);
+  const imageY = useTransform(scrollYProgress, [0, 1], [0, -20]);
   const imageScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.01]);
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, -18]);
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, -14]);
   const bgOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   // Nav scroll progress
@@ -123,35 +123,16 @@ const Hero = () => {
     setShowHeroVideo(false);
   }, [isMobile]);
 
-  // Character animation variants
-  const titleChars = "I'M A".split("");
-  const roleChars = "FULL STACK".split("");
-
-  const charVariants = {
-    hidden: { opacity: 0, y: 50, rotateX: -90 },
+  // Single-word animation variants (replaces per-character which created 30+ motion nodes)
+  const lineVariants = {
+    hidden: { opacity: 0, y: 40 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      rotateX: 0,
       transition: {
-        delay: 0.4 + i * 0.04,
+        delay: 0.3 + i * 0.12,
         duration: 0.6,
         ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
-      },
-    }),
-  };
-
-  const pillVariants = {
-    hidden: { opacity: 0, scale: 0, y: 20 },
-    visible: (i: number) => ({
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: {
-        delay: 1.0 + i * 0.1,
-        type: "spring" as const,
-        stiffness: 300,
-        damping: 20,
       },
     }),
   };
@@ -186,9 +167,9 @@ const Hero = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.08)_0%,transparent_60%)] z-10" />
       </motion.div>
 
-      {/* Ambient glow backgrounds */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full opacity-[0.07] blur-[120px] bg-primary pointer-events-none animate-float" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full opacity-[0.05] blur-[100px] bg-primary pointer-events-none" style={{ animationDelay: "3s" }} />
+      {/* Ambient glow backgrounds — pure CSS, no JS animation needed */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full opacity-[0.06] blur-[100px] bg-primary pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[350px] h-[350px] rounded-full opacity-[0.04] blur-[90px] bg-primary pointer-events-none" />
 
       {/* ===== NAVBAR ===== */}
       <motion.nav
@@ -254,65 +235,49 @@ const Hero = () => {
       <div className="relative flex flex-col items-center text-center pt-24 pb-8 px-6 md:pt-24 md:pb-10">
         {/* Greeting */}
         <motion.p
-          initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ delay: 0.2, duration: 0.8 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.7 }}
           style={{ y: titleY }}
           className="text-primary text-sm font-mono tracking-widest mb-4 z-[1]"
         >
-          {"// Hello World".split("").map((char, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 + i * 0.04 }}
-            >
-              {char}
-            </motion.span>
-          ))}
+          {"// Hello World"}
         </motion.p>
 
-        {/* Big Title with character animation */}
+        {/* Big Title — single motion.div per line, vastly fewer nodes than per-character */}
         <motion.div
           style={{ y: titleY, opacity: titleOpacity }}
           className="z-[1] will-change-transform"
         >
-          <h1 className="font-heading text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tight text-foreground leading-none whitespace-nowrap">
-            {titleChars.map((char, i) => (
-              <motion.span
-                key={i}
-                custom={i}
-                initial="hidden"
-                animate="visible"
-                variants={charVariants}
-                className="inline-block"
-                style={{ display: "inline-block", whiteSpace: "pre" }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
+          <h1 className="font-heading text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tight text-foreground leading-none">
+            <motion.span
+              custom={0}
+              initial="hidden"
+              animate="visible"
+              variants={lineVariants}
+              className="inline-block"
+            >
+              I&apos;M A
+            </motion.span>
           </h1>
 
           <h1 className="font-heading text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tight leading-none mt-2">
-            {roleChars.map((char, i) => (
-              <motion.span
-                key={i}
-                custom={i + titleChars.length}
-                initial="hidden"
-                animate="visible"
-                variants={charVariants}
-                className="inline-block gradient-text"
-                style={{ display: "inline-block", whiteSpace: "pre" }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
+            <motion.span
+              custom={1}
+              initial="hidden"
+              animate="visible"
+              variants={lineVariants}
+              className="inline-block gradient-text"
+            >
+              FULL STACK
+            </motion.span>
             {" "}
             <motion.span
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.6 }}
-              className="text-foreground"
+              custom={2}
+              initial="hidden"
+              animate="visible"
+              variants={lineVariants}
+              className="inline-block text-foreground"
             >
               DEVELOPER
             </motion.span>
@@ -360,9 +325,9 @@ const Hero = () => {
 
         {/* Profile Image with 3D effect */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.7, rotateX: 20, filter: "blur(10px)" }}
-          animate={{ opacity: 1, scale: 1, rotateX: 0, filter: "blur(0px)" }}
-          transition={{ delay: 0.6, duration: 1.2, type: "spring", stiffness: 100 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5, duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
           style={{ y: imageY, scale: imageScale }}
           className="relative group mb-6 z-[5] will-change-transform"
         >
@@ -419,26 +384,23 @@ const Hero = () => {
 
         {/* Contact info pills */}
         <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1, duration: 0.6 }}
           className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground mb-6 z-[5]"
         >
           {[
             { icon: Mail, text: "dhivyakanth20@gmail.com" },
             { icon: Phone, text: "8072181949" },
             { icon: MapPin, text: "Tiruchengode, Namakkal" },
-          ].map((item, i) => (
-            <motion.span
+          ].map((item) => (
+            <span
               key={item.text}
-              custom={i}
-              initial="hidden"
-              animate="visible"
-              variants={pillVariants}
-              whileHover={{ y: -3, scale: 1.02, boxShadow: "0 0 25px hsl(var(--primary) / 0.15)" }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-full glass border border-border/50 hover:border-primary/30 transition-colors duration-300"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full glass border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
             >
               <item.icon className="w-4 h-4 text-primary" />
               {item.text}
-            </motion.span>
+            </span>
           ))}
         </motion.div>
 

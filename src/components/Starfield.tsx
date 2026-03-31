@@ -17,7 +17,7 @@ const Starfield = () => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const lowPowerDevice = isMobile || prefersReducedMotion || (navigator.hardwareConcurrency ?? 8) <= 4;
     let dpr = Math.min(window.devicePixelRatio || 1, lowPowerDevice ? 1 : 1.5);
-    const targetFps = lowPowerDevice ? 24 : 36;
+    const targetFps = lowPowerDevice ? 20 : 30;
     const frameInterval = 1000 / targetFps;
     let lastFrameTime = 0;
     let scrollY = 0;
@@ -39,7 +39,7 @@ const Starfield = () => {
     }
 
     const stars: Star[] = [];
-    const STAR_COUNT = lowPowerDevice ? 70 : 120;
+    const STAR_COUNT = lowPowerDevice ? 50 : 80;
     const shootingStars: ShootingStar[] = [];
     let lastShootTime = 0;
     const SHOOT_MIN = 5000;
@@ -52,6 +52,7 @@ const Starfield = () => {
       dpr = Math.min(window.devicePixelRatio || 1, lowPowerDevice ? 1 : 1.5);
       canvas.width = canvas.offsetWidth * dpr;
       canvas.height = canvas.offsetHeight * dpr;
+      // Set transform once on resize — NOT inside the render loop
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       renderNebula();
     };
@@ -144,7 +145,7 @@ const Starfield = () => {
 
       const width = w();
       const height = h();
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // No setTransform here — it's set once in resize(), saves a matrix multiply every frame
       ctx.clearRect(0, 0, width, height);
 
       if (nebulaCanvas) {
@@ -170,7 +171,7 @@ const Starfield = () => {
       for (let i = shootingStars.length - 1; i >= 0; i--) {
         const s = shootingStars[i];
         s.tail.push({ x: s.x, y: s.y });
-        if (s.tail.length > 36) s.tail.shift();
+        if (s.tail.length > 24) s.tail.shift();
         s.x += s.vx;
         s.y += s.vy;
         s.vx *= 1.005;
@@ -200,25 +201,15 @@ const Starfield = () => {
         }
 
         ctx.save();
-        ctx.shadowBlur = 15 * s.life;
-        ctx.shadowColor = `hsla(152, 100%, 80%, ${s.life * 0.8})`;
+        // No shadowBlur on shooting stars — it forces a GPU compositing layer per frame
         ctx.fillStyle = `hsla(0, 0%, 100%, ${s.life})`;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.size * 1.2, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
-        const hGrad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 6);
-        hGrad.addColorStop(0, `hsla(152, 100%, 90%, ${s.life * 0.4})`);
-        hGrad.addColorStop(0.3, `hsla(152, 80%, 65%, ${s.life * 0.15})`);
-        hGrad.addColorStop(1, "hsla(152, 80%, 65%, 0)");
-        ctx.fillStyle = hGrad;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size * 6, 0, Math.PI * 2);
-        ctx.fill();
         ctx.restore();
       }
 
-      // Parallax stars
+      // Parallax stars — skip glow halos on low power to halve fill calls
       const scrollFactor = scrollY / height;
       for (const star of stars) {
         star.twinklePhase += star.twinkleSpeed;
@@ -231,14 +222,7 @@ const Starfield = () => {
         const sy = ((star.baseY - parallaxOffset) % 1 + 1) % 1 * height;
         const sx = star.x * width;
 
-        if (!lowPowerDevice) {
-          ctx.fillStyle = `hsla(152, 60%, 55%, ${alpha * 0.22})`;
-          ctx.beginPath();
-          ctx.arc(sx, sy, size * 2.2, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        ctx.fillStyle = `hsla(0, 0%, 100%, ${alpha})`;
+        ctx.fillStyle = `hsla(0,0%,100%,${alpha})`;
         ctx.beginPath();
         ctx.arc(sx, sy, size * 0.55, 0, Math.PI * 2);
         ctx.fill();

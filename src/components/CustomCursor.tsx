@@ -36,13 +36,13 @@ const CustomCursor = () => {
   const lastEmit = useRef(0);
 
   // Config
-  const particleSize = 3.2;
-  const trailWidth = 20;
-  const fadeSpeed = 0.02;
-  const glowIntensity = 10;
-  const motionSensitivity = 1.2;
-  const maxParticles = 56;
-  const emitRate = 8;
+  const particleSize = 2.8;
+  const trailWidth = 16;
+  const fadeSpeed = 0.025;
+  const glowIntensity = 6;
+  const motionSensitivity = 1.0;
+  const maxParticles = 40;
+  const emitRate = 14;
 
   const createParticle = useCallback((x: number, y: number, speed: number): Particle => {
     const depth = Math.random() * 0.6 + 0.4;
@@ -143,7 +143,7 @@ const CustomCursor = () => {
       const dy = mouse.current.y - prevMouse.current.y;
       const speed = Math.sqrt(dx * dx + dy * dy) * motionSensitivity;
 
-      const emitCount = Math.min(Math.max(1, Math.floor(speed * 0.3)), 5);
+      const emitCount = Math.min(Math.max(1, Math.floor(speed * 0.2)), 3);
       if (now - lastEmit.current > emitRate && mouse.current.x > 0) {
         for (let i = 0; i < emitCount; i++) {
           if (particles.current.length < maxParticles) {
@@ -179,17 +179,22 @@ const CustomCursor = () => {
         ctx.save();
         ctx.globalAlpha = alpha;
 
-        ctx.shadowBlur = glowIntensity * lifeRatio;
-        ctx.shadowColor = p.color;
+        // Only use shadowBlur when particle is bright enough — saves GPU fill cost
+        if (lifeRatio > 0.4) {
+          ctx.shadowBlur = glowIntensity * lifeRatio;
+          ctx.shadowColor = p.color;
+        } else {
+          ctx.shadowBlur = 0;
+        }
 
         ctx.fillStyle = p.color;
         drawStar(ctx, p.x, p.y, currentSize, p.rotation);
         ctx.fill();
 
         ctx.shadowBlur = 0;
-        ctx.globalAlpha = alpha * 0.8;
+        ctx.globalAlpha = alpha * 0.7;
         ctx.fillStyle = "hsl(0, 0%, 100%)";
-        drawStar(ctx, p.x, p.y, currentSize * 0.35, p.rotation);
+        drawStar(ctx, p.x, p.y, currentSize * 0.3, p.rotation);
         ctx.fill();
 
         ctx.restore();
